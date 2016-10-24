@@ -771,7 +771,14 @@ class fMailbox
 		}
 		return $new_array;
 	}
-
+	
+	
+	/**
+	 * Whether or not to accept invalid peer certificate
+	 *
+	 * @var boolean
+	 */
+	private $accept_invalid_peer = FALSE;
 
 	/**
 	 * A counter to use for generating command keys
@@ -859,9 +866,10 @@ class fMailbox
 	 * @param  integer $port      The port to connect via - only required if non-standard
 	 * @param  boolean $secure    If SSL should be used for the connection - this requires the `openssl` extension
 	 * @param  integer $timeout   The timeout to use when connecting
+	 * @param  boolean $accept_invalid_peer If True, don't validate the peer certificate
 	 * @return fMailbox
 	 */
-	public function __construct($type, $host, $username, $password, $port=NULL, $secure=FALSE, $timeout=NULL)
+	public function __construct($type, $host, $username, $password, $port=NULL, $secure=FALSE, $timeout=NULL, $accept_invalid_peer=FALSE)
 	{
 		if ($timeout === NULL) {
 			$timeout = ini_get('default_socket_timeout');
@@ -890,14 +898,15 @@ class fMailbox
 				'openssl'
 			);
 		}
-
-		$this->type     = $type;
-		$this->host     = $host;
-		$this->username = $username;
-		$this->password = $password;
-		$this->port     = $port;
-		$this->secure   = $secure;
-		$this->timeout  = $timeout;
+		
+		$this->type                = $type;
+		$this->host                = $host;
+		$this->username            = $username;
+		$this->password            = $password;
+		$this->port                = $port;
+		$this->secure              = $secure;
+		$this->timeout             = $timeout;
+		$this->accept_invalid_peer = $accept_invalid_peer;
 	}
 
 
@@ -945,13 +954,21 @@ class fMailbox
 		}
 
 		fCore::startErrorCapture(E_WARNING);
-
-		$this->connection = fsockopen(
-			$this->secure ? 'tls://' . $this->host : $this->host,
-			$this->port,
+		
+		$this->connection = stream_socket_client(
+			($this->secure ? 'tls://' . $this->host : $this->host) . ':' . $this->port,
 			$error_number,
 			$error_string,
-			$this->timeout
+			$this->timeout,
+			STREAM_CLIENT_CONNECT,
+			$this->accept_invalid_peer
+				? stream_context_create([
+					'ssl' => [
+						'verify_peer' => FALSE,
+						'verify_peer_name' => FALSE
+					]
+				])
+				: stream_context_create()
 		);
 
 		foreach (fCore::stopErrorCapture('#ssl#i') as $error) {

@@ -420,7 +420,9 @@ class fCache
 				$files = array_diff(scandir($this->config['path']), array('.', '..'));
 				$success = TRUE;
 				foreach ($files as $file) {
+					fCore::startErrorCapture();
 					$success = unlink($this->config['path'] . $file) && $success;
+					fCore::stopErrorCapture();
 				}
 				return $success;
 
@@ -464,7 +466,10 @@ class fCache
 				)->countAffectedRows();
 
 			case 'directory':
-				return unlink($this->config['path'] . $key);
+				fCore::startErrorCapture();
+				$succes = unlink($this->config['path'] . $key);
+				fCore::stopErrorCapture();
+				return $success;
 
 			case 'file':
 				if (isset($this->data_store[$key])) {

@@ -458,7 +458,7 @@ class fCache
 				return apc_delete($key);
 
 			case 'database':
-				return $this->data_store->query(
+				return (bool) $this->data_store->query(
 					"DELETE FROM %r WHERE %r = %s",
 					$this->config['table'],
 					$this->config['key_column'],
@@ -479,7 +479,7 @@ class fCache
 				return TRUE;
 
 			case 'memcache':
-				return $this->data_store->delete($key, 0);
+				return (bool) $this->data_store->delete($key, 0);
 
 			case 'redis':
 				return (bool) $this->data_store->delete($key);
@@ -692,7 +692,7 @@ class fCache
 
 			case 'redis':
 				if ($ttl) {
-					return $this->data_store->setex($key, $value, $ttl);
+					return $this->data_store->setex($key, $ttl, $value);
 				}
 				return $this->data_store->set($key, $value);
 

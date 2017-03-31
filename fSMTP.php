@@ -13,7 +13,7 @@
 class fSMTP
 {
 	/**
-	 * The authorization methods that are valid for this server
+	 * The preferred authorization methods
 	 *
 	 * @var array
 	 */
@@ -174,6 +174,39 @@ class fSMTP
 		$this->password = $password;
 	}
 
+	/**
+	 * Sets the method(s) by which the object will authenticate.
+	 *
+	 * This method works with SMTP authentication. It accepts one or more authentication
+	 * methods (DIGEST-MD5, CRAM-MD5, LOGIN and PLAIN). If one or more of these params is
+	 * passed to the method the object will attempt to use only those authentication methods
+	 * to connect, if the server supports them.
+	 *
+	 * By calling ->setPreferredAuthMethods('CRAM-MD5', 'LOGIN', 'PLAIN') the class not to
+	 * use DIGEST-MD5 authentication, even if the server supports it, unless DIGEST-MD5 is
+	 * the ONLY method the server supports.
+	 *
+	 * @param string
+	 * @param string
+	 * @param string
+	 * @param string
+	 * @return void
+	 */
+	public function setPreferredAuthMethods()
+	{
+		$valid_methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
+		$args          = func_get_args();
+
+		$this->auth_methods = array();
+
+		foreach ($args as $method) {
+			$method = strtoupper($method);
+			if (in_array($method, $valid_methods)) {
+				array_push($this->auth_methods, $method);
+			}
+		}
+	}
+
 
 	/**
 	 * Closes the connection to the SMTP server
@@ -267,6 +300,14 @@ class fSMTP
 
 		if (!$auth_methods || !$this->username) {
 			return;
+		}
+
+		if (!empty($this->auth_methods)) {
+			$temp = array_intersect($this->auth_methods, $auth_methods); // Only valid preferred methods
+
+			if (!empty($temp)) {
+				$auth_methods = $temp;
+			}
 		}
 
 		if (in_array('DIGEST-MD5', $auth_methods)) {

@@ -58,6 +58,15 @@ class fURL
 
 
 	/**
+	 *
+	 */
+	static public function getPath()
+	{
+		return static::get();
+	}
+
+
+	/**
 	 * Returns the current query string, does not include parameters added by rewrites
 	 *
 	 * @return string  The query string
@@ -240,14 +249,6 @@ class fURL
 
 		return '?' . http_build_query($qs_array, '', '&');
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fURL
-	 */
-	private function __construct() { }
 }
 
 

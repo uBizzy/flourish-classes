@@ -942,13 +942,22 @@ class fRequest
 
 
 	/**
-	 * Forces use as a static class
 	 *
-	 * @return fRequest
 	 */
-	private function __construct() { }
-}
+	 public function getUri()
+	 {
+		 return new fUrl();
+	 }
 
+
+	 /**
+	  *
+	  */
+	 public function getMethod()
+	 {
+		 return strtoupper($_SERVER['REQUEST_METHOD']);
+	 }
+}
 
 
 /**

@@ -249,7 +249,7 @@ class fNumber
 			$number = str_replace(',', '', $number);
 		}
 
-		$matched = preg_match('#^([+\-]?)((?:\d*\.)?\d+)(?:e([+\-]?)(\d+))?$#iD', $number, $matches);
+		$matched = preg_match('#^([+\-]?)(\d*\.\d+|\d+\.?)(?:e([+\-]?)(\d+))?$#iD', $number, $matches);
 
 		if (!$matched) {
 			throw new fValidationException(

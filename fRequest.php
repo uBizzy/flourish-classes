@@ -537,6 +537,16 @@ class fRequest
 
 
 	/**
+	 *
+	 */
+	static public function getQueryParams()
+	{
+		return $_GET;
+	}
+
+
+
+	/**
 	 * Gets a value from the `DELETE`/`PUT` post data, `$_POST` or `$_GET` superglobals (in that order), restricting to a specific set of values
 	 *
 	 * @param  string $key           The key to get the value of - array elements can be accessed via `[sub-key]` syntax

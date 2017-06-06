@@ -610,14 +610,6 @@ class fCryptography
 			);
 		}
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fSecurity
-	 */
-	private function __construct() { }
 }
 
 

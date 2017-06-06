@@ -116,14 +116,6 @@ class fText
 			'post' => array()
 		);
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fText
-	 */
-	private function __construct() { }
 }
 
 

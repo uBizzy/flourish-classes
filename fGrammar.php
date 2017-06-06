@@ -787,14 +787,6 @@ class fGrammar
 
 		return $string;
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fGrammar
-	 */
-	private function __construct() { }
 }
 
 

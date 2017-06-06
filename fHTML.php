@@ -276,14 +276,6 @@ class fHTML
 
 		return FALSE;
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fHTML
-	 */
-	private function __construct() { }
 }
 
 

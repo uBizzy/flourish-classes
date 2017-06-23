@@ -2891,21 +2891,7 @@ abstract class fActiveRecord
 			throw $e;
 		}
 
-		fORM::callHookCallbacks(
-			$this,
-			'post::store()',
-			$this->values,
-			$this->old_values,
-			$this->related_records,
-			$this->cache
-		);
-
 		$was_new = !$this->exists();
-
-		// If we got here we succefully stored, so update old values to make exists() work
-		foreach ($this->values as $column => $value) {
-			$this->old_values[$column] = array($value);
-		}
 
 		// If the object was just inserted into the database, save it to the identity map
 		if ($was_new) {
@@ -2915,6 +2901,20 @@ abstract class fActiveRecord
 				self::$identity_map[$class] = array();
 			}
 			self::$identity_map[$class][$hash] = $this;
+		}
+
+		fORM::callHookCallbacks(
+			$this,
+			'post::store()',
+			$this->values,
+			$this->old_values,
+			$this->related_records,
+			$this->cache
+		);
+
+		// If we got here we succefully stored, so update old values to make exists() work
+		foreach ($this->values as $column => $value) {
+			$this->old_values[$column] = array($value);
 		}
 
 		return $this;

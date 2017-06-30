@@ -503,14 +503,6 @@ class fAuthorization
 			);
 		}
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fAuthorization
-	 */
-	private function __construct() { }
 }
 
 

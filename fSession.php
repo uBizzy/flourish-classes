@@ -862,14 +862,6 @@ class fSession
 
 		return self::$backend->set(self::$key_prefix . $id, $values, $seconds);
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fSession
-	 */
-	private function __construct() { }
 }
 
 

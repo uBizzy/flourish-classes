@@ -580,9 +580,18 @@ class fSession
 	{
 		if (!self::$regenerated){
 			self::open();
-			if (!session_regenerate_id(TRUE)) {
+
+			$delete_old = TRUE;
+
+			if (self::$backend) {
+				self::destroyCache(session_id());
+				$delete_old = FALSE;
+			}
+
+			if (!session_regenerate_id($delete_old)) {
 				throw new fUnexpectedException('There was an error regenerating the session id');
 			}
+
 			self::$regenerated = TRUE;
 		}
 	}

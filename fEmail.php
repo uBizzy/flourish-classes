@@ -494,13 +494,6 @@ class fEmail
 	private $html_body = NULL;
 
 	/**
-	 * The Message-ID header for the email
-	 *
-	 * @var string
-	 */
-	private $message_id = NULL;
-
-	/**
 	 * The plaintext body of the email
 	 *
 	 * @var string
@@ -586,17 +579,6 @@ class fEmail
 
 
 	/**
-	 * Initializes fEmail for creating message ids
-	 *
-	 * @return fEmail
-	 */
-	public function __construct()
-	{
-		$this->message_id = '<' . fCryptography::randomString(10, 'hexadecimal') . '.' . time() . '@' . self::getFQDN() . '>';
-	}
-
-
-	/**
 	 * All requests that hit this method should be requests for callbacks
 	 *
 	 * @internal
@@ -659,7 +641,7 @@ class fEmail
 			$filename = $this->generateNewFilename($filename);
 		}
 
-		$cid = count($this->related_files) . '.' . substr($this->message_id, 1, -1);
+		$cid = count($this->related_files) . '.' . fCryptography::randomString(10, 'hexadecimal');
 
 		$this->related_files[$filename] = array(
 			'mime-type'  => $mime_type,
@@ -1355,6 +1337,8 @@ class fEmail
 	{
 		$this->validate();
 
+		$message_id = '<' . fCryptography::randomString(10, 'hexadecimal') . '.' . time() . '@' . self::getFQDN() . '>';
+
 		// The mail() function on Windows doesn't support names in headers so
 		// we must strip them down to just the email address
 		if ($connection === NULL && fCore::checkOS('windows')) {
@@ -1380,7 +1364,7 @@ class fEmail
 		$to = substr(trim($this->buildMultiAddressHeader("To", $this->to_emails)), 4);
 
 		$top_level_boundary = $this->createBoundary();
-		$headers            = $this->createHeaders($top_level_boundary, $this->message_id);
+		$headers            = $this->createHeaders($top_level_boundary, $message_id);
 
 		$subject = str_replace(array("\r", "\n"), '', $this->subject);
 		$subject = self::makeEncodedWord($subject, 9);
@@ -1401,7 +1385,7 @@ class fEmail
 			$to_emails = array_merge($to_emails, $this->extractEmails($this->bcc_emails));
 			$from = $this->bounce_to_email ? $this->bounce_to_email : current($this->extractEmails(array($this->from_email)));
 			$connection->send($from, $to_emails, "To: " . $to . "\r\nSubject: " . $subject . "\r\n" . $headers, $body);
-			return $this->message_id;
+			return $message_id;
 		}
 
 		// Sendmail when not in safe mode will allow you to set the envelope from address via the -f parameter
@@ -1467,7 +1451,7 @@ class fEmail
 			);
 		}
 
-		return $this->message_id;
+		return $message_id;
 	}
 
 

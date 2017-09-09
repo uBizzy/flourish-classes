@@ -2031,9 +2031,10 @@ abstract class fActiveRecord
 	 * Sets the values for this record by getting values from the request through the fRequest class
 	 *
 	 * @param  boolean $recursive  If all one-to-many tables and one-to-one relationships should be populated
+	 * @param  boolean $prefix  If provided, fRequest will filter by this prefix before populating
 	 * @return fActiveRecord  The record object, to allow for method chaining
 	 */
-	public function populate($recursive=FALSE)
+	public function populate($recursive=FALSE, $prefix = NULL)
 	{
 		$class = get_class($this);
 
@@ -2050,10 +2051,14 @@ abstract class fActiveRecord
 			$this->cache
 		);
 
-		$schema = fORMSchema::retrieve($class);
-		$table  = fORM::tablize($class);
+		if ($prefix) {
+			fRequest::filter($prefix);
+		}
 
+		$schema      = fORMSchema::retrieve($class);
+		$table       = fORM::tablize($class);
 		$column_info = $schema->getColumnInfo($table);
+
 		foreach ($column_info as $column => $info) {
 
 			if (array_search($column, $this->protected_params) !== FALSE) {
@@ -2061,10 +2066,14 @@ abstract class fActiveRecord
 			}
 
 			if (fRequest::check($column)) {
-				$method = 'set' . fGrammar::camelize($column, TRUE);
+				$method  = 'set' . fGrammar::camelize($column, TRUE);
 				$cast_to = ($info['type'] == 'blob') ? 'binary' : NULL;
 				$this->$method(fRequest::get($column, $cast_to));
 			}
+		}
+
+		if ($prefix) {
+			fRequest::unfilter();
 		}
 
 		fORM::callHookCallbacks(

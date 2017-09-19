@@ -2038,6 +2038,10 @@ abstract class fActiveRecord
 	{
 		$class = get_class($this);
 
+		if ($prefix) {
+			fRequest::filter($prefix);
+		}
+
 		if (fORM::getActiveRecordMethod($class, 'populate')) {
 			return $this->__call('populate', array());
 		}
@@ -2050,10 +2054,6 @@ abstract class fActiveRecord
 			$this->related_records,
 			$this->cache
 		);
-
-		if ($prefix) {
-			fRequest::filter($prefix);
-		}
 
 		$schema      = fORMSchema::retrieve($class);
 		$table       = fORM::tablize($class);
@@ -2072,10 +2072,6 @@ abstract class fActiveRecord
 			}
 		}
 
-		if ($prefix) {
-			fRequest::unfilter();
-		}
-
 		fORM::callHookCallbacks(
 			$this,
 			'post::populate()',
@@ -2084,6 +2080,10 @@ abstract class fActiveRecord
 			$this->related_records,
 			$this->cache
 		);
+
+		if ($prefix) {
+			fRequest::unfilter();
+		}
 
 		if ($recursive) {
 			$one_to_many_relationships = $schema->getRelationships($table, 'one-to-many');

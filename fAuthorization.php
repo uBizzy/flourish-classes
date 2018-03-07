@@ -240,10 +240,7 @@ class fAuthorization
 	 */
 	static public function getAuthLevels()
 	{	
-		$keys = array_keys(self::$levels);
-		$output = array_combine($keys, $keys);
-
-		return $output;
+		return array_keys(self::$levels);
 	}
 
 

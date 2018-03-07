@@ -19,6 +19,7 @@ class fAuthorization
 	const checkIP          = 'fAuthorization::checkIP';
 	const checkLoggedIn    = 'fAuthorization::checkLoggedIn';
 	const destroyUserInfo  = 'fAuthorization::destroyUserInfo';
+	const getAuthLevels    = 'fAuthorization::getAuthLevels';
 	const getLoginPage     = 'fAuthorization::getLoginPage';
 	const getRequestedURL  = 'fAuthorization::getRequestedURL';
 	const getUserACLs      = 'fAuthorization::getUserACLs';
@@ -232,6 +233,17 @@ class fAuthorization
 		fSession::delete(__CLASS__ . '::user_acls');
 		fSession::delete(__CLASS__ . '::user_token');
 		fSession::delete(__CLASS__ . '::requested_url');
+	}
+
+	/**
+	 * Gets the available auth levels for all users.
+	 */
+	static public function getAuthLevels()
+	{	
+		$keys = array_keys(self::$levels);
+		$output = array_combine($keys, $keys);
+
+		return $output;
 	}
 
 

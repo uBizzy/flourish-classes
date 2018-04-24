@@ -71,6 +71,13 @@ class fCore
 	static private $captured_errors = array();
 
 	/**
+	 * A custom mailer callback
+	 *
+	 * @var callable
+	 */
+	static private $custom_mailer = NULL;
+
+	 /**
 	 * A stack of the previous error handler, one callback per level
 	 *
 	 * @var array
@@ -486,6 +493,18 @@ class fCore
 		} else {
 			return vsprintf($message, $args);
 		}
+	}
+
+
+	/**
+	 * Set custom mailer callback. Allows for fully custom error and exception emails
+	 *
+	 * @param callable $callback  A callback which accepts to arguements: subject, message, destination
+	 * @return void
+	 */
+	static public function configureCustomMailer($callback)
+	{
+		self::$custom_mailer = $callback;
 	}
 
 
@@ -1095,7 +1114,10 @@ class fCore
 			}
 
 			if (self::checkDestination($destination) == 'email') {
-				if (self::$smtp_connection) {
+				if (self::$custom_mailer) {
+					call_user_func_array(self::$custom_mailer, [$subject, $message, $destination]);
+
+				} elseif (self::$smtp_connection) {
 					$email = new fEmail();
 					foreach (explode(',', $destination) as $recipient) {
 						$email->addRecipient($recipient);

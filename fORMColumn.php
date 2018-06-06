@@ -806,8 +806,8 @@ class fORMColumn
 			}
 
 			$ip_regex       = '(?:(?:[01]?\d?\d|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d?\d|2[0-4]\d|25[0-5])';
-			$hostname_regex = '[a-z]+(?:[a-z0-9\-]*[a-z0-9]\.?|\.)*';
-			$domain_regex   = '([a-z]+([a-z0-9\-]*[a-z0-9])?\.)+[a-z]{2,}';
+			$hostname_regex = '[a-z0-9]+(?:[a-z0-9\-]*[a-z0-9]\.?|\.)*';
+			$domain_regex   = '([a-z0-9]+([a-z0-9\-]*[a-z0-9])?\.)+[a-z]{2,}';
 			if (!preg_match('#^(https?://(' . $ip_regex . '|' . $hostname_regex . ')(?=/|$)|' . $domain_regex . '(?=/|$)|/)#i', $values[$column])) {
 				$validation_messages[$column] = self::compose(
 					'%sPlease enter a link in the form http://www.example.com',

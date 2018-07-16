@@ -358,6 +358,30 @@ class fImage extends fFile
 	 */
 	static private function getImageType($image)
 	{
+		if (function_exists('exif_imagetype')) {
+			fCore::startErrorCapture();
+			$type = exif_imagetype($image);
+			fCore::stopErrorCapture();
+
+			if ($type === IMAGETYPE_JPEG) {
+				return 'jpg';
+			}
+
+			if ($type === IMAGETYPE_TIFF_II || $type === IMAGETYPE_TIFF_MM) {
+				return 'tif';
+			}
+
+			if ($type === IMAGETYPE_PNG) {
+				return 'png';
+			}
+
+			if ($type === IMAGETYPE_GIF) {
+				return 'gif';
+			}
+		}
+
+		// Fall back to legacy image detection.
+
 		$handle   = fopen($image, 'r');
 		$contents = fread($handle, 32);
 		fclose($handle);

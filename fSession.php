@@ -191,7 +191,7 @@ class fSession
 		session_write_close();
 		unset($_SESSION);
 		self::$open = FALSE;
-		if (self::$old_session_module_name) {
+		if (self::$old_session_module_name && !headers_sent()) {
 			session_module_name(self::$old_session_module_name);
 		}
 	}

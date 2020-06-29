@@ -203,9 +203,6 @@ class fURL
 		$parameters = func_get_args();
 
 		parse_str(self::getQueryString(), $qs_array);
-		if (get_magic_quotes_gpc()) {
-			$qs_array = array_map('stripslashes', $qs_array);
-		}
 
 		foreach ($parameters as $parameter) {
 			unset($qs_array[$parameter]);
@@ -228,9 +225,6 @@ class fURL
 	static public function replaceInQueryString($parameter, $value)
 	{
 		parse_str(self::getQueryString(), $qs_array);
-		if (get_magic_quotes_gpc()) {
-			$qs_array = array_map('stripslashes', $qs_array);
-		}
 
 		settype($parameter, 'array');
 		settype($value, 'array');

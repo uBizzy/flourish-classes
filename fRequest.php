@@ -127,10 +127,6 @@ class fRequest
 			$cast_to = 'string';
 		}
 
-		if (get_magic_quotes_gpc() && (self::isPost() || self::isGet())) {
-			$value = self::stripSlashes($value);
-		}
-
 		// This normalizes an empty element to NULL
 		if ($cast_to === NULL && $value === '') {
 			$value = NULL;

@@ -87,9 +87,7 @@ class fCookie
 	{
 		if (isset($_COOKIE[$name])) {
 			$value = fUTF8::clean($_COOKIE[$name]);
-			if (get_magic_quotes_gpc()) {
-				$value = stripslashes($value);
-			}
+			
 			return $value;
 		}
 		return $default_value;

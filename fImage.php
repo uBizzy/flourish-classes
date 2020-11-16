@@ -24,6 +24,13 @@ class fImage extends fFile
 
 
 	/**
+	 * Enable or disable the exif image type check
+	 *
+	 * @var boolean
+	 */
+	static private $exif_image_type_check = true;
+
+	/**
 	 * If we are using the ImageMagick processor, this stores the path to the binaries
 	 *
 	 * @var string
@@ -255,7 +262,6 @@ class fImage extends fFile
 		}
 	}
 
-
 	/**
 	 * Returns an array of acceptable mime types for the processor that was detected
 	 *
@@ -358,6 +364,16 @@ class fImage extends fFile
 	 */
 	static private function getImageType($image)
 	{
+		if (self::$exif_image_type_check === false) {
+			$extension = pathinfo($image, PATHINFO_EXTENSION);
+
+			if (in_array($extension, ['jpg', 'tif', 'png', 'gif'])) {
+				return $extension;
+			}
+
+			return null;
+		}
+
 		if (function_exists('exif_imagetype')) {
 			fCore::startErrorCapture();
 			$type = exif_imagetype($image);
@@ -500,6 +516,17 @@ class fImage extends fFile
 		self::$imagemagick_temp_dir = NULL;
 		self::$processor            = NULL;
 	}
+
+
+	/**
+	 * Set whether or not to do exif imagetype checks
+	 *
+	 * @param boolean
+	 */
+	 static public function setExifTypeCheck($check = true)
+	 {
+		 return self::$exif_image_type_check = $check;
+	 }
 
 
 	/**

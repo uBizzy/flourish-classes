@@ -69,6 +69,13 @@ class fFilesystem
 	static private $rollback_operations = NULL;
 
 	/**
+	 * Enables or disables the file checks
+	 *
+	 * @var boolean
+	 */
+	 static private $skip_checks = false;
+
+	/**
 	 * Stores a list of search => replace strings for web path translations
 	 *
 	 * @var array
@@ -201,11 +208,13 @@ class fFilesystem
 			);
 		}
 
-		if (!is_readable($path)) {
-			throw new fValidationException(
-				'The path specified, %s, does not exist or is not readable',
-				$path
-			);
+		if (!self::$skip_checks) {
+			if (!is_readable($path)) {
+				throw new fValidationException(
+					'The path specified, %s, does not exist or is not readable',
+					$path
+				);
+			}
 		}
 
 		if (is_dir($path)) {
@@ -377,6 +386,17 @@ class fFilesystem
 
 		return $file;
 	}
+
+
+	/**
+	 * Set whether or not to skip checks
+	 *
+	 * @param boolean
+	 */
+	 static public function setSkipChecks($check = true)
+	 {
+		 return self::$skip_checks = $check;
+	 }
 
 
 	/**

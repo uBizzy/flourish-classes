@@ -19,6 +19,14 @@ class fFile implements Iterator, Countable
 	const create = 'fFile::create';
 
 
+    /**
+     * Enable or disable the file checks
+     *
+     * @var boolean
+     */
+    static private $skip_checks = false;
+
+
 	/**
 	 * Creates a file on the filesystem and returns an object representing it.
 	 *
@@ -103,6 +111,17 @@ class fFile implements Iterator, Countable
 
 		return self::determineMimeTypeByContents($contents, $extension);
 	}
+
+
+	/**
+	 * Set whether or not to skip checks
+	 *
+	 * @param boolean
+	 */
+	 static public function setSkipChecks($check = true)
+	 {
+		 return self::$skip_checks = $check;
+	 }
 
 
 	/**
@@ -309,17 +328,17 @@ class fFile implements Iterator, Countable
 		}
 
 		if ($_0_4 == "SIT!" || $_0_4 == "SITD" || substr($content, 0, 7) == 'StuffIt') {
-			return 'application/x-stuffit';	
+			return 'application/x-stuffit';
 		}
-		
+
 		// Better detection for text files based on the first line or so.
 		if (strpos($content, '<?php') !== FALSE || strpos($content, '<?=') !== FALSE) {
-			return 'application/x-httpd-php';	
+			return 'application/x-httpd-php';
 		}
-		
+
 		preg_match('/(\S.*?)\s*\n/m', $content, $lines);
 		$first_line = count($lines) > 1 ? $lines[1] : '';
-		
+
 		if (strpos($first_line, '<?xml') !== FALSE) {
 			if (stripos($content, '<!DOCTYPE') !== FALSE) {
 				return 'application/xhtml+xml';
@@ -332,14 +351,14 @@ class fFile implements Iterator, Countable
 			}
 			return 'application/xml';
 		}
-		
+
 		if (stripos($first_line, '<html') !== FALSE) {
 			return 'text/html';
 		}
 		if (stripos($first_line, '<!DOCTYPE') !== FALSE) {
 			return 'text/html';
 		}
-		
+
 		if (preg_match('#^\#\![/a-z0-9]+(python|perl|php|ruby)$#mi', $first_line, $matches)) {
 			switch (strtolower($matches[1])) {
 				case 'php':
@@ -506,7 +525,7 @@ class fFile implements Iterator, Countable
 	 */
 	public function __construct($file, $skip_checks=FALSE)
 	{
-		if (!$skip_checks) {
+		if (!$skip_checks || !self::$skip_checks) {
 			if (empty($file)) {
 				throw new fValidationException(
 					'No filename was specified'
@@ -519,6 +538,7 @@ class fFile implements Iterator, Countable
 					$file
 				);
 			}
+
 			if (is_dir($file)) {
 				throw new fValidationException(
 					'The file specified, %s, is actually a directory',

@@ -735,7 +735,11 @@ class fDatabase
 
 			fCore::startErrorCapture();
 
-			$this->connection = pg_connect($connection_string, PGSQL_CONNECT_FORCE_NEW);
+			if (!$this->persistent) {
+                $this->connection = pg_connect($connection_string, PGSQL_CONNECT_FORCE_NEW);
+            } else {
+                $this->connection = pg_pconnect($connection_string);
+            }
 
 			$errors = fCore::stopErrorCapture();
 		}
@@ -1003,14 +1007,14 @@ class fDatabase
 	/**
 	 * Sets if the database connection should be persistent
 	 *
-	 * Currently only supported for mssql
+	 * Currently only supported for mssql, postgres
 	 *
 	 * @param boolean $flag If the connection should be persistent
 	 * @return void
 	 */
 	public function enablePersistence($flag)
 	{
-		$this->persistence = (boolean) $flag;
+		$this->persistent = (boolean) $flag;
 	}
 
 

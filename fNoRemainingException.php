@@ -9,9 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fNoRemainingException
  *
- * @version    1.0.0b2
- * @changes    1.0.0b2  Fixed a typo in the documentation [wb, 2010-07-14]
- * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fNoRemainingException extends fExpectedException
 {

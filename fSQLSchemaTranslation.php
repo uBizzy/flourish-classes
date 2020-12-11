@@ -9,10 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fSQLSchemaTranslation
  *
- * @version    1.0.0b3
- * @changes    1.0.0b3   Fixed associating a sequence with a column in PostgreSQL when setting auto-increment, fixed detection of some Oracle CHECK(IN) constraints, fixed default values for SQLite `ON DELETE` and `ON UPDATE` clauses [wb, 2012-01-12]
- * @changes    1.0.0b2   Fixed detection of explicitly named SQLite foreign key constraints [wb, 2011-08-23]
- * @changes    1.0.0b    The initial implementation [wb, 2011-05-09]
  */
 class fSQLSchemaTranslation
 {

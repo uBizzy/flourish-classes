@@ -9,22 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fGrammar
  *
- * @version    1.0.0b15
- * @changes    1.0.0b15  Added length checking to ensure blank strings are not being passed to various methods [wb, 2011-06-20]
- * @changes    1.0.0b14  Fixed a bug in singularization that would affect words containing the substring `mice` or `lice` [wb, 2011-02-24]
- * @changes    1.0.0b13  Fixed the pluralization of video [wb, 2010-08-10]
- * @changes    1.0.0b12  Updated ::singularize() and ::pluralize() to be able to handle underscore_CamelCase [wb, 2010-08-06]
- * @changes    1.0.0b11  Fixed custom camelCase to underscore_notation rules [wb, 2010-06-23]
- * @changes    1.0.0b10  Removed `e` flag from preg_replace() calls [wb, 2010-06-08]
- * @changes    1.0.0b9   Fixed a bug with ::camelize() and human-friendly strings [wb, 2010-06-08]
- * @changes    1.0.0b8   Added the ::stem() method [wb, 2010-05-27]
- * @changes    1.0.0b7   Added the `$return_error` parameter to ::pluralize() and ::singularize() [wb, 2010-03-30]
- * @changes    1.0.0b6   Added missing ::compose() method [wb, 2010-03-03]
- * @changes    1.0.0b5   Fixed ::reset() to properly reset the singularization and pluralization rules [wb, 2009-10-28]
- * @changes    1.0.0b4   Added caching for various methods - provided significant performance boost to ORM [wb, 2009-06-15]
- * @changes    1.0.0b3   Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b2   Fixed a bug where some words would lose capitalization with ::pluralize() and ::singularize() [wb, 2009-01-25]
- * @changes    1.0.0b    The initial implementation [wb, 2007-09-25]
  */
 class fGrammar
 {
@@ -803,14 +787,6 @@ class fGrammar
 
 		return $string;
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fGrammar
-	 */
-	private function __construct() { }
 }
 
 

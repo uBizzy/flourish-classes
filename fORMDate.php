@@ -9,16 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMDate
  *
- * @version    1.0.0b9
- * @changes    1.0.0b9  Updated code to work with the new fORM API [wb, 2010-08-06]
- * @changes    1.0.0b8  Changed validation messages array to use column name keys [wb, 2010-05-26]
- * @changes    1.0.0b7  Fixed the `set` methods to return the record object in order to be consistent with all other `set` methods [wb, 2010-03-15]
- * @changes    1.0.0b6  Fixed an issue with calling a non-existent method on fTimestamp instances [wb, 2009-11-03]
- * @changes    1.0.0b5  Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
- * @changes    1.0.0b4  Fixed setting up the inspect callback in ::configureTimezoneColumn() [wb, 2009-10-11]
- * @changes    1.0.0b3  Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
- * @changes    1.0.0b2  Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]
- * @changes    1.0.0b   The initial implementation [wb, 2008-09-05]
  */
 class fORMDate
 {

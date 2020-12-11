@@ -9,9 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fUnexpectedException
  *
- * @version    1.0.0b2
- * @changes    1.0.0b2  Updated ::printMessage() to use an ASCII dash to prevent encoding issues when an output encoding is not specified [wb, 2011-05-09]
- * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fUnexpectedException extends fException
 {

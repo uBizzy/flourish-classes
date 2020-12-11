@@ -9,16 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMSchema
  *
- * @version    1.0.0b9
- * @changes    1.0.0b9  Enhanced various exception messages [wb, 2010-09-19]
- * @changes    1.0.0b8  Added 'one-to-one' support to ::getRouteNameFromRelationship(), '!many-to-one' to ::getRoute() [wb, 2010-03-03]
- * @changes    1.0.0b7  Added support for multiple databases [wb, 2009-10-28]
- * @changes    1.0.0b6  Internal Backwards Compatibility Break - Added the `$schema` parameter to the beginning of ::getRoute(), ::getRouteName(), ::getRoutes() and ::isOneToOne() - added '!many-to-one' relationship type handling [wb, 2009-10-22]
- * @changes    1.0.0b5  Fixed some error messaging to not include {empty_string} in some situations [wb, 2009-07-31]
- * @changes    1.0.0b4  Added ::isOneToOne() [wb, 2009-07-21]
- * @changes    1.0.0b3  Added routes caching for performance [wb, 2009-06-15]
- * @changes    1.0.0b2  Backwards Compatiblity Break - removed ::enableSmartCaching(), fORM::enableSchemaCaching() now provides equivalent functionality [wb, 2009-05-04]
- * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fORMSchema
 {

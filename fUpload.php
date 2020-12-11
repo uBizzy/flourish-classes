@@ -5,27 +5,12 @@
  * @copyright  Copyright (c) 2007-2012 Will Bond, others
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Will Bond, iMarc LLC [wb-imarc] <will@imarc.net>
+ * @author     Brian Tam, [bt] <brian@imarc.net>
  * @license    http://flourishlib.com/license
  *
  * @package    Flourish
  * @link       http://flourishlib.com/fUpload
  *
- * @version    1.0.0b15
- * @changes    1.0.0b15  Fixed an undefined variable error in ::setMaxSize() [wb, 2012-09-16]
- * @changes    1.0.0b14  Fixed some method signatures [wb, 2011-08-24]
- * @changes    1.0.0b13  Changed the class to throw fValidationException objects instead of fProgrammerException objects when the form is improperly configured - this is to prevent error logs when bad requests are sent by scanners/hackers [wb, 2011-08-24]
- * @changes    1.0.0b12  Fixed the ::filter() callback constant [wb, 2010-11-24]
- * @changes    1.0.0b11  Added ::setImageDimensions() and ::setImageRatio() [wb-imarc, 2010-11-11]
- * @changes    1.0.0b10  BackwardsCompatibilityBreak - renamed ::setMaxFilesize() to ::setMaxSize() to be consistent with fFile::getSize() [wb, 2010-05-30]
- * @changes    1.0.0b9   BackwardsCompatibilityBreak - the class no longer accepts uploaded files that start with a `.` unless ::allowDotFiles() is called - added ::setOptional() [wb, 2010-05-30]
- * @changes    1.0.0b8   BackwardsCompatibilityBreak - ::validate() no longer returns the `$_FILES` array for the file being validated - added `$return_message` parameter to ::validate(), fixed a bug with detection of mime type for text files [wb, 2010-05-26]
- * @changes    1.0.0b7   Added ::filter() to allow for ignoring array file upload field entries that did not have a file uploaded [wb, 2009-10-06]
- * @changes    1.0.0b6   Updated ::move() to use the new fFilesystem::createObject() method [wb, 2009-01-21]
- * @changes    1.0.0b5   Removed some unnecessary error suppression operators from ::move() [wb, 2009-01-05]
- * @changes    1.0.0b4   Updated ::validate() so it properly handles upload max filesize specified in human-readable notation [wb, 2009-01-05]
- * @changes    1.0.0b3   Removed the dependency on fRequest [wb, 2009-01-05]
- * @changes    1.0.0b2   Fixed a bug with validating filesizes [wb, 2008-11-25]
- * @changes    1.0.0b    The initial implementation [wb, 2007-06-14]
  */
 class fUpload
 {
@@ -362,6 +347,34 @@ class fUpload
 		return fFilesystem::createObject($file_name);
 	}
 
+	/**
+	 * Get uploaded parameters from fUpload
+	 *
+	 * @param  string            $parameter  The file upload array field to get
+	 * @param  string            $field      The file upload field to get the file from
+	 * @param  mixed             $index      If the field was an array file upload field, upload the file corresponding to this index
+	 * @return string|NULL  the requested value, or `NULL` if no file was uploaded
+	 */
+	public function getParameter($parameter, $field, $index=NULL) {
+		$file_array = $this->extractFileUploadArray($field, $index);
+
+		// This will only ever be true if the file is optional
+		if ($file_array['name'] == '' || $file_array['tmp_name'] == '' || $file_array['size'] == 0) {
+			return NULL;
+		}
+		switch ($parameter) {
+			case 'name':
+				return $file_array['name'];
+			case 'size':
+				return $file_array['size'];
+			case 'type':
+				return $file_array['type'];
+			case 'contents':
+				return file_get_contents($file_array['tmp_name']);
+			default:
+				return NULL;
+		}
+	}
 
 	/**
 	 * Sets the allowable dimensions for an uploaded image

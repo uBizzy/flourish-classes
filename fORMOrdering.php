@@ -10,26 +10,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMOrdering
  *
- * @version    1.0.0b19
- * @changes    1.0.0b19  Updated code to work with the new fORM API [wb, 2010-08-06]
- * @changes    1.0.0b18  Changed ::configureOrderingColumn() to ensure the column specified can store negative values [wb, 2010-07-21]
- * @changes    1.0.0b17  Changed validation messages array to use column name keys [wb, 2010-05-26]
- * @changes    1.0.0b16  Updated the class to allow for multiple ordering columns per class [dc-imarc, 2010-05-10]
- * @changes    1.0.0b15  Fixed a bug with ordering columns that are part of a multi-column unique constraint [wb, 2009-11-13]
- * @changes    1.0.0b14  Fixed a bug affecting where conditions with columns that are not null but have a default value [wb, 2009-11-03]
- * @changes    1.0.0b13  Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
- * @changes    1.0.0b12  Changed SQL statements to use value placeholders, identifier escaping and schema support [wb, 2009-10-22]
- * @changes    1.0.0b11  Fixed another bug with deleting records in the middle of a set, added support for reordering multiple records at once [dc-imarc, 2009-07-17]
- * @changes    1.0.0b10  Fixed a bug with deleting multiple in-memory records in the same set [dc-imarc, 2009-07-15]
- * @changes    1.0.0b9   Fixed a bug with using fORM::registerInspectCallback() [wb, 2009-07-15]
- * @changes    1.0.0b8   Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
- * @changes    1.0.0b7   Fixed ::validate() so it properly ignores ordering columns in multi-column unique constraints [wb, 2009-06-17]
- * @changes    1.0.0b6   Updated code for new fORM API [wb, 2009-06-15]
- * @changes    1.0.0b5   Updated class to automatically correct ordering values that are too high [wb, 2009-06-14]
- * @changes    1.0.0b4   Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]
- * @changes    1.0.0b3   Fixed a bug with setting a new record to anywhere but the end of a set [wb, 2009-03-18]
- * @changes    1.0.0b2   Fixed a bug with ::inspect(), 'max_ordering_value' was being returned as 'max_ordering_index' [wb, 2009-03-02]
- * @changes    1.0.0b    The initial implementation [wb, 2008-06-25]
  */
 class fORMOrdering
 {

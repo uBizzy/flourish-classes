@@ -10,11 +10,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fValidationException
  *
- * @version    1.0.0b4
- * @changes    1.0.0b4  Added support for nested error arrays [wb-imarc, 2010-10-03]
- * @changes    1.0.0b3  Added ::removeFieldNames() [wb, 2010-05-26]
- * @changes    1.0.0b2  Added a custom ::__construct() to handle arrays of messages [wb, 2009-09-17]
- * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fValidationException extends fExpectedException
 {

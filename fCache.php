@@ -9,13 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fCache
  *
- * @version    1.0.0b6
- * @changes    1.0.0b6  Fixed a bug with ::add() setting a value when it shouldn't if no ttl was given for the file backend [wb, 2012-01-12]
- * @changes    1.0.0b5  Added missing documentation for using Redis as a backend [wb, 2011-08-25]
- * @changes    1.0.0b4  Added the `database`, `directory` and `redis` types, added support for the memcached extention and support for custom serialization callbacks [wb, 2011-06-21]
- * @changes    1.0.0b3  Added `0` to the memcache delete method call since otherwise the method triggers notices on some installs [wb, 2011-05-10]
- * @changes    1.0.0b2  Fixed API calls to the memcache extension to pass the TTL as the correct parameter [wb, 2011-02-01]
- * @changes    1.0.0b   The initial implementation [wb, 2009-04-28]
  */
 class fCache
 {
@@ -427,7 +420,9 @@ class fCache
 				$files = array_diff(scandir($this->config['path']), array('.', '..'));
 				$success = TRUE;
 				foreach ($files as $file) {
+					fCore::startErrorCapture();
 					$success = unlink($this->config['path'] . $file) && $success;
+					fCore::stopErrorCapture();
 				}
 				return $success;
 
@@ -463,7 +458,7 @@ class fCache
 				return apc_delete($key);
 
 			case 'database':
-				return $this->data_store->query(
+				return (bool) $this->data_store->query(
 					"DELETE FROM %r WHERE %r = %s",
 					$this->config['table'],
 					$this->config['key_column'],
@@ -471,7 +466,10 @@ class fCache
 				)->countAffectedRows();
 
 			case 'directory':
-				return unlink($this->config['path'] . $key);
+				fCore::startErrorCapture();
+				$succes = unlink($this->config['path'] . $key);
+				fCore::stopErrorCapture();
+				return $success;
 
 			case 'file':
 				if (isset($this->data_store[$key])) {
@@ -481,7 +479,7 @@ class fCache
 				return TRUE;
 
 			case 'memcache':
-				return $this->data_store->delete($key, 0);
+				return (bool) $this->data_store->delete($key, 0);
 
 			case 'redis':
 				return (bool) $this->data_store->delete($key);
@@ -694,7 +692,7 @@ class fCache
 
 			case 'redis':
 				if ($ttl) {
-					return $this->data_store->setex($key, $value, $ttl);
+					return $this->data_store->setex($key, $ttl, $value);
 				}
 				return $this->data_store->set($key, $value);
 

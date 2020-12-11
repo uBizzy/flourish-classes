@@ -13,23 +13,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fUTF8
  *
- * @version    1.0.0b16
- * @changes    1.0.0b16  Added code to ::clean() to use mbstring if available since recent versions of iconv and `//IGNORE` now return `FALSE` for bad encodings [wb, 2012-09-21]
- * @changes    1.0.0b15  Fixed a bug with using IBM's iconv implementation on AIX [wb, 2011-07-29]
- * @changes    1.0.0b14  Added a workaround for iconv having issues in MAMP 1.9.4+ [wb, 2011-07-26]
- * @changes    1.0.0b13  Fixed notices from being thrown when invalid data is sent to ::clean() [wb, 2011-06-10]
- * @changes    1.0.0b12  Fixed a variable name typo in ::sub() [wb, 2011-05-09]
- * @changes    1.0.0b11  Updated the class to not using phpinfo() to determine the iconv implementation [wb, 2010-11-04]
- * @changes    1.0.0b10  Fixed a bug with capitalizing a lowercase i resulting in a dotted upper-case I [wb, 2010-11-01]
- * @changes    1.0.0b9   Updated class to use fCore::startErrorCapture() instead of `error_reporting()` [wb, 2010-08-09]
- * @changes    1.0.0b8   Removed `e` flag from preg_replace() calls [wb, 2010-06-08]
- * @changes    1.0.0b7   Added the methods ::trim(), ::rtrim() and ::ltrim() [wb, 2010-05-11]
- * @changes    1.0.0b6   Fixed ::clean() to work with PHP installs that use an iconv library that doesn't support //IGNORE [wb, 2010-03-02]
- * @changes    1.0.0b5   Changed ::ucwords() to also uppercase words right after various punctuation [wb, 2009-09-18]
- * @changes    1.0.0b4   Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b3   Fixed a parameter name in ::rpos() from `$search` to `$needle` [wb, 2009-02-06]
- * @changes    1.0.0b2   Fixed a bug in ::explode() with newlines and zero-length delimiters [wb, 2009-02-05]
- * @changes    1.0.0b    The initial implementation [wb, 2008-06-01]
  */
 class fUTF8
 {

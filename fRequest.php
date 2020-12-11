@@ -19,29 +19,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fRequest
  *
- * @version    1.0.0b22
- * @changes    1.0.0b22  Added non-array support to ::filter() [jt, 2013-09-25]
- * @changes    1.0.0b21  Fixed problem where Accept headers are spaced out and mime-types won't match (mainly from IE) [mjs, 2012-12-10]
- * @changes    1.0.0b20  Added ::isHead(), fixed ability to call ::set() on `HEAD` requests [wb-imarc, 2011-11-23]
- * @changes    1.0.0b19  Added the `$use_default_for_blank` parameter to ::get() [wb, 2011-06-03]
- * @changes    1.0.0b18  Backwards Compatibility Break - ::getBestAcceptType() and ::getBestAcceptLanguage() now return either `NULL`, `FALSE` or a string instead of `NULL` or a string, both methods are more robust in handling edge cases [wb, 2011-02-06]
- * @changes    1.0.0b17  Fixed support for 3+ dimensional input arrays, added a fixed for the PHP DoS float bug #53632, added support for type-casted arrays in ::get() [wb, 2011-01-09]
- * @changes    1.0.0b16  Backwards Compatibility Break - changed ::get() to remove binary characters when casting to a `string`, changed `int` and `integer` to cast to a real integer when possible, added new types of `binary` and `integer!` [wb, 2010-11-30]
- * @changes    1.0.0b15  Added documentation about `[sub-key]` syntax, added `[sub-key]` support to ::check() [wb, 2010-09-12]
- * @changes    1.0.0b14  Rewrote ::set() to not require recursion for array syntax [wb, 2010-09-12]
- * @changes    1.0.0b13  Fixed ::set() to work with `PUT` requests [wb, 2010-06-30]
- * @changes    1.0.0b12  Fixed a bug with ::getBestAcceptLanguage() returning the second-best language [wb, 2010-05-27]
- * @changes    1.0.0b11  Added ::isAjax() [al, 2010-03-15]
- * @changes    1.0.0b10  Fixed ::get() to not truncate integers to the 32bit integer limit [wb, 2010-03-05]
- * @changes    1.0.0b9   Updated class to use new fSession API [wb, 2009-10-23]
- * @changes    1.0.0b8   Casting to an integer or string in ::get() now properly casts when the `$key` isn't present in the request, added support for date, time, timestamp and `?` casts [wb, 2009-08-25]
- * @changes    1.0.0b7   Fixed a bug with ::filter() not properly creating new `$_FILES` entries [wb, 2009-07-02]
- * @changes    1.0.0b6   ::filter() now works with empty prefixes and filtering the `$_FILES` superglobal has been fixed [wb, 2009-07-02]
- * @changes    1.0.0b5   Changed ::filter() so that it can be called multiple times for multi-level filtering [wb, 2009-06-02]
- * @changes    1.0.0b4   Added the HTML escaping functions ::encode() and ::prepare() [wb, 2009-05-27]
- * @changes    1.0.0b3   Updated class to use new fSession API [wb, 2009-05-08]
- * @changes    1.0.0b2   Added ::generateCSRFToken() from fCRUD::generateRequestToken() and ::validateCSRFToken() from fCRUD::validateRequestToken() [wb, 2009-05-08]
- * @changes    1.0.0b    The initial implementation [wb, 2007-06-14]
  */
 class fRequest
 {
@@ -150,10 +127,6 @@ class fRequest
 			$cast_to = 'string';
 		}
 
-		if (get_magic_quotes_gpc() && (self::isPost() || self::isGet())) {
-			$value = self::stripSlashes($value);
-		}
-
 		// This normalizes an empty element to NULL
 		if ($cast_to === NULL && $value === '') {
 			$value = NULL;
@@ -231,9 +204,10 @@ class fRequest
 	 * Indicated if the parameter specified is set in the `$_GET` or `$_POST` superglobals or in the post data of a `PUT` or `DELETE` request
 	 *
 	 * @param  string $key  The key to check - array elements can be checked via `[sub-key]` syntax
+	 * @param  boolean $allow_null  Check if the value exists in the array as NULL
 	 * @return boolean  If the parameter is set
 	 */
-	static public function check($key)
+	static public function check($key, $allow_null = FALSE)
 	{
 		self::initPutDelete();
 
@@ -244,8 +218,14 @@ class fRequest
 			$key               = substr($key, 0, $bracket_pos);
 		}
 
-		if (!isset($_GET[$key]) && !isset($_POST[$key]) && !isset(self::$put_delete[$key])) {
-			return FALSE;
+		if (!$allow_null) {
+			if (!isset($_GET[$key]) && !isset($_POST[$key]) && !isset(self::$put_delete[$key])) {
+				return FALSE;
+			}
+		} else {
+			if (!array_key_exists($key, $_GET) && !array_key_exists($key, $_POST) && !array_key_exists($key, self::$put_delete)) {
+				return FALSE;
+			}
 		}
 
 		$values = array($_GET, $_POST, self::$put_delete);
@@ -266,7 +246,9 @@ class fRequest
 			$key = end($array_keys);
 		}
 
-		return isset($values[0][$key]) || isset($values[1][$key]) || isset($values[2][$key]);
+		return $allow_null
+			? array_key_exists($key, $values[0]) || array_key_exists($key, $values[1]) || array_key_exists($key, self::$values[2])
+			: isset($values[0][$key]) || isset($values[1][$key]) || isset($values[2][$key]);
 	}
 
 
@@ -305,14 +287,24 @@ class fRequest
 		$_FILES = array();
 		foreach (self::$backup_files[$current_backup] as $field => $value) {
 			$matches_prefix = !$prefix || ($prefix && strpos($field, $prefix) === 0);
-			if ($matches_prefix && is_array($value) && isset($value['name'][$key])) {
-				$new_field = preg_replace($regex, '', $field);
-				$_FILES[$new_field]             = array();
-				$_FILES[$new_field]['name']     = $value['name'][$key];
-				$_FILES[$new_field]['type']     = $value['type'][$key];
-				$_FILES[$new_field]['tmp_name'] = $value['tmp_name'][$key];
-				$_FILES[$new_field]['error']    = $value['error'][$key];
-				$_FILES[$new_field]['size']     = $value['size'][$key];
+			if ($matches_prefix && is_array($value)) {
+				if (is_null($key)) {
+					$new_field = preg_replace($regex, '', $field);
+					$_FILES[$new_field]             = array();
+					$_FILES[$new_field]['name']     = $value['name'];
+					$_FILES[$new_field]['type']     = $value['type'];
+					$_FILES[$new_field]['tmp_name'] = $value['tmp_name'];
+					$_FILES[$new_field]['error']    = $value['error'];
+					$_FILES[$new_field]['size']     = $value['size'];
+				} elseif (isset($value['name'][$key])) {
+					$new_field = preg_replace($regex, '', $field);
+					$_FILES[$new_field]             = array();
+					$_FILES[$new_field]['name']     = $value['name'][$key];
+					$_FILES[$new_field]['type']     = $value['type'][$key];
+					$_FILES[$new_field]['tmp_name'] = $value['tmp_name'][$key];
+					$_FILES[$new_field]['error']    = $value['error'][$key];
+					$_FILES[$new_field]['size']     = $value['size'][$key];
+				}
 			}
 		}
 
@@ -538,6 +530,16 @@ class fRequest
 		}
 		return self::pickBestAcceptItem('HTTP_ACCEPT', $filter);
 	}
+
+
+	/**
+	 *
+	 */
+	static public function getQueryParams()
+	{
+		return $_GET;
+	}
+
 
 
 	/**
@@ -780,7 +782,7 @@ class fRequest
 				$q = number_format(1.0, 5);
 			}
 			$q .= $suffix--;
-			
+
 			$output[trim($parts[0])] = $q;
 		}
 
@@ -946,13 +948,22 @@ class fRequest
 
 
 	/**
-	 * Forces use as a static class
 	 *
-	 * @return fRequest
 	 */
-	private function __construct() { }
-}
+	 public function getUri()
+	 {
+		 return new fUrl();
+	 }
 
+
+	 /**
+	  *
+	  */
+	 public function getMethod()
+	 {
+		 return strtoupper($_SERVER['REQUEST_METHOD']);
+	 }
+}
 
 
 /**

@@ -9,9 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fText
  *
- * @version    1.0.0b2
- * @changes    1.0.0b2  Updated ::compose() to more handle `$components` passed as an array [wb, 2009-02-05]
- * @changes    1.0.0b   The initial implementation [wb, 2008-11-12]
  */
 class fText
 {
@@ -119,14 +116,6 @@ class fText
 			'post' => array()
 		);
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fText
-	 */
-	private function __construct() { }
 }
 
 

@@ -9,37 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMFile
  *
- * @version    1.0.0b30
- * @changes    1.0.0b30  Updated code for the new fUpload API [wb, 2011-08-24]
- * @changes    1.0.0b29  Fixed a bug when uploading a new file to a column with an existing file that was not found on the filesystem [wb, 2011-05-10]
- * @changes    1.0.0b28  Backwards Compatibility Break - ::configureImageUploadColumn() no longer accepts the optional `$image_type` as the fourth parameter, instead ::addFImageMethodCall() must be called with `saveChanges` as the `$method` and the image type as the first parameter [wb, 2010-11-30]
- * @changes    1.0.0b27  Fixed column inheritance to properly handle non-images and inheriting into image upload columns [wb, 2010-09-18]
- * @changes    1.0.0b26  Enhanced ::configureColumnInheritance() to ensure both columns specified have been set up as file upload columns [wb, 2010-08-18]
- * @changes    1.0.0b25  Updated code to work with the new fORM API [wb, 2010-08-06]
- * @changes    1.0.0b24  Changed validation messages array to use column name keys [wb, 2010-05-26]
- * @changes    1.0.0b23  Fixed a bug with ::upload() that could cause a method called on a non-object error in relation to the upload directory not being defined [wb, 2010-05-10]
- * @changes    1.0.0b22  Updated the TEMP_DIRECTORY constant to not include the trailing slash, code now uses DIRECTORY_SEPARATOR to fix issues on Windows [wb, 2010-04-28]
- * @changes    1.0.0b21  Fixed ::set() to perform column inheritance, just like ::upload() does [wb, 2010-03-15]
- * @changes    1.0.0b20  Fixed the `set` and `process` methods to return the record instance, changed `upload` methods to return the fFile object, updated ::reflect() with new return values [wb, 2010-03-15]
- * @changes    1.0.0b19  Fixed a few missed instances of old fFile method names [wb, 2009-12-16]
- * @changes    1.0.0b18  Updated code for the new fFile API [wb, 2009-12-16]
- * @changes    1.0.0b17  Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
- * @changes    1.0.0b16  fImage method calls for file upload columns will no longer cause notices due to a missing image type [wb, 2009-09-09]
- * @changes    1.0.0b15  ::addFImageMethodCall() no longer requires column be an image upload column, inheritance to an image column now only happens for fImage objects [wb, 2009-07-29]
- * @changes    1.0.0b14  Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
- * @changes    1.0.0b13  Updated code for new fORM API [wb, 2009-06-15]
- * @changes    1.0.0b12  Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b11  Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]
- * @changes    1.0.0b10  Fixed a bug where an inherited file upload column would not be properly re-set with an `existing-` input [wb, 2009-05-26]
- * @changes    1.0.0b9   ::upload() and ::set() now set the `$values` entry to `NULL` for filenames that are empty [wb, 2009-03-02]
- * @changes    1.0.0b8   Changed ::set() to accept objects and reject directories [wb, 2009-01-21]
- * @changes    1.0.0b7   Changed the class to use the new fFilesystem::createObject() method [wb, 2009-01-21]
- * @changes    1.0.0b6   Old files are now checked against the current file to prevent removal of an in-use file [wb, 2008-12-23]
- * @changes    1.0.0b5   Fixed ::replicate() to ensure the temp directory exists and ::set() to use the temp directory [wb, 2008-12-23]
- * @changes    1.0.0b4   ::objectify() no longer throws an exception when a file can't be found [wb, 2008-12-18]
- * @changes    1.0.0b3   Added ::replicate() so that replicated files get pu in the temp directory [wb, 2008-12-12]
- * @changes    1.0.0b2   Fixed a bug with objectifying file columns [wb, 2008-11-24]
- * @changes    1.0.0b    The initial implementation [wb, 2008-05-28]
  */
 class fORMFile
 {

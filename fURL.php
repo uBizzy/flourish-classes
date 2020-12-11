@@ -13,17 +13,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fURL
  *
- * @version    1.0.0b10
- * @changes    1.0.0b10  Fixed some method signatures [wb, 2011-08-24]
- * @changes    1.0.0b9   Fixed ::redirect() to handle no parameters properly [wb, 2011-06-13]
- * @changes    1.0.0b8   Added the `$delimiter` parameter to ::makeFriendly() [wb, 2011-06-03]
- * @changes    1.0.0b7   Fixed ::redirect() to be able to handle unqualified and relative paths [wb, 2011-03-02]
- * @changes    1.0.0b6   Added the `$max_length` parameter to ::makeFriendly() [wb, 2010-09-19]
- * @changes    1.0.0b5   Updated ::redirect() to not require a URL, using the current URL as the default [wb, 2009-07-29]
- * @changes    1.0.0b4   ::getDomain() now includes the port number if non-standard [wb, 2009-05-02]
- * @changes    1.0.0b3   ::makeFriendly() now changes _-_ to - and multiple _ to a single _ [wb, 2009-03-24]
- * @changes    1.0.0b2   Fixed ::makeFriendly() so that _ doesn't appear at the beginning of URLs [wb, 2009-03-22]
- * @changes    1.0.0b    The initial implementation [wb, 2007-06-14]
  */
 class fURL
 {
@@ -65,6 +54,15 @@ class fURL
 		} else {
 			return 'http://' . $_SERVER['SERVER_NAME'] . ($port && $port != 80 ? ':' . $port : '');
 		}
+	}
+
+
+	/**
+	 *
+	 */
+	static public function getPath()
+	{
+		return static::get();
 	}
 
 
@@ -205,9 +203,6 @@ class fURL
 		$parameters = func_get_args();
 
 		parse_str(self::getQueryString(), $qs_array);
-		if (get_magic_quotes_gpc()) {
-			$qs_array = array_map('stripslashes', $qs_array);
-		}
 
 		foreach ($parameters as $parameter) {
 			unset($qs_array[$parameter]);
@@ -230,9 +225,6 @@ class fURL
 	static public function replaceInQueryString($parameter, $value)
 	{
 		parse_str(self::getQueryString(), $qs_array);
-		if (get_magic_quotes_gpc()) {
-			$qs_array = array_map('stripslashes', $qs_array);
-		}
 
 		settype($parameter, 'array');
 		settype($value, 'array');
@@ -251,14 +243,6 @@ class fURL
 
 		return '?' . http_build_query($qs_array, '', '&');
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fURL
-	 */
-	private function __construct() { }
 }
 
 

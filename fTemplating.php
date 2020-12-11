@@ -11,31 +11,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fTemplating
  *
- * @version    1.0.0b24
- * @changes    1.0.0b24  Added getRootPath() to retrieve the path fTemplating was instantiated with [jt, 2012-10-24]
- * @changes    1.0.0b23  Added a default `$name` for ::retrieve() to mirror ::attach() [wb, 2011-08-31]
- * @changes    1.0.0b22  Backwards Compatibility Break - removed the static method ::create(), added the static method ::attach() to fill its place [wb, 2011-08-31]
- * @changes    1.0.0b21  Fixed a bug in ::enableMinification() where the minification cache directory was sometimes not properly converted to a web path [wb, 2011-08-31]
- * @changes    1.0.0b20  Fixed a bug in CSS minification that would reduce multiple zeros that are part of a hex color code, fixed minification of `+ ++` and similar constructs in JS [wb, 2011-08-31]
- * @changes    1.0.0b19  Corrected a bug in ::enablePHPShortTags() that would prevent proper translation inside of HTML tag attributes [wb, 2011-01-09]
- * @changes    1.0.0b18  Fixed a bug with CSS minification and black hex codes [wb, 2010-10-10]
- * @changes    1.0.0b17  Backwards Compatibility Break - ::delete() now returns the values of the element or elements that were deleted instead of returning the fTemplating instance [wb, 2010-09-19]
- * @changes    1.0.0b16  Fixed another bug with minifying JS regex literals [wb, 2010-09-13]
- * @changes    1.0.0b15  Fixed a bug with minifying JS regex literals that occur after a reserved word [wb, 2010-09-12]
- * @changes    1.0.0b14  Added documentation about `[sub-key]` syntax [wb, 2010-09-12]
- * @changes    1.0.0b13  Backwards Compatibility Break - ::add(), ::delete(), ::get() and ::set() now interpret `[` and `]` as array shorthand and thus they can not be used in element names, renamed ::remove() to ::filter() - added `$beginning` parameter to ::add() and added ::remove() method [wb, 2010-09-12]
- * @changes    1.0.0b12  Added ::enableMinification(), ::enablePHPShortTags(), the ability to be able to place child fTemplating objects via a new magic element `__main__` and the `$main_element` parameter for ::__construct() [wb, 2010-08-31]
- * @changes    1.0.0b11  Fixed a bug with the elements not being initialized to a blank array [wb, 2010-08-12]
- * @changes    1.0.0b10  Updated ::place() to ignore URL query strings when detecting an element type [wb, 2010-07-26]
- * @changes    1.0.0b9   Added the methods ::delete() and ::remove() [wb+mn, 2010-07-15]
- * @changes    1.0.0b8   Fixed a bug with placing absolute file paths on Windows [wb, 2010-07-09]
- * @changes    1.0.0b7   Removed `e` flag from preg_replace() calls [wb, 2010-06-08]
- * @changes    1.0.0b6   Changed ::set() and ::add() to return the object for method chaining, changed ::set() and ::get() to accept arrays of elements [wb, 2010-06-02]
- * @changes    1.0.0b5   Added ::encode() [wb, 2010-05-20]
- * @changes    1.0.0b4   Added ::create() and ::retrieve() for named fTemplating instances [wb, 2010-05-11]
- * @changes    1.0.0b3   Fixed an issue with placing relative file path [wb, 2010-04-23]
- * @changes    1.0.0b2   Added the ::inject() method [wb, 2009-01-09]
- * @changes    1.0.0b    The initial implementation [wb, 2007-06-14]
  */
 class fTemplating
 {

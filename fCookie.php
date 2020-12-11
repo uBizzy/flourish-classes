@@ -10,10 +10,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fCookie
  *
- * @version    1.0.0b3
- * @changes    1.0.0b3  Added the ::delete() method [nt+wb, 2009-09-30]
- * @changes    1.0.0b2  Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b   The initial implementation [wb, 2008-09-01]
  */
 class fCookie
 {
@@ -91,9 +87,7 @@ class fCookie
 	{
 		if (isset($_COOKIE[$name])) {
 			$value = fUTF8::clean($_COOKIE[$name]);
-			if (get_magic_quotes_gpc()) {
-				$value = stripslashes($value);
-			}
+			
 			return $value;
 		}
 		return $default_value;

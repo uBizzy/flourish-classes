@@ -9,14 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fStatement
  *
- * @version    1.0.0b7
- * @changes    1.0.0b7  Fixed handling of arrays of values for ::execute(), ::executeQuery() and ::executeUnbufferedQuery(), fixed escaping of values that become `NULL` [wb, 2011-05-09]
- * @changes    1.0.0b6  Added ::getUntranslatedSQL() [wb, 2011-01-09]
- * @changes    1.0.0b5  Fixed an edge case where the mysqli extension would leak memory when fetching a `TEXT` or `BLOB` column [wb, 2010-08-28]
- * @changes    1.0.0b4  Updated class to use fCore::startErrorCapture() instead of `error_reporting()` [wb, 2010-08-09]
- * @changes    1.0.0b3  Backwards Compatibility Break - removed ODBC support. Fixed UTF-8 support for the `pdo_dblib` extension. [wb, 2010-07-31]
- * @changes    1.0.0b2  Added IBM DB2 support [wb, 2010-04-13]
- * @changes    1.0.0b   The initial implementation [wb, 2010-03-02]
  */
 class fStatement
 {

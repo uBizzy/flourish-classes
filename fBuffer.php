@@ -9,10 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fBuffer
  *
- * @version    1.0.0b3
- * @changes    1.0.0b3  Added a check to ensure the zlib extension is installd when doing gzipped buffering [wb, 2010-05-20]
- * @changes    1.0.0b2  Added the `$gzip` parameter to ::start() [wb, 2010-05-19]
- * @changes    1.0.0b   The initial implementation [wb, 2008-03-16]
  */
 class fBuffer
 {

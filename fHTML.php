@@ -13,16 +13,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fHTML
  *
- * @version    1.0.0b9
- * @changes    1.0.0b9  Added force div argument to fHTML::show() [jt, 2013-04-09]
- * @changes    1.0.0b8  Changed ::encode() and ::prepare() to handle arrays of strings [wb, 2010-05-19]
- * @changes    1.0.0b7  Fixed a bug where some conditional comments were causing the regex in ::prepare() to break [wb, 2009-11-04]
- * @changes    1.0.0b6  Updated ::showChecked() to require strict equality if one parameter is `NULL` [wb, 2009-06-02]
- * @changes    1.0.0b5  Fixed ::prepare() so it does not encode multi-line HTML comments [wb, 2009-05-09]
- * @changes    1.0.0b4  Added methods ::printOption() and ::showChecked() that were in fCRUD [wb, 2009-05-08]
- * @changes    1.0.0b3  Fixed a bug where ::makeLinks() would double-link some URLs [wb, 2009-01-08]
- * @changes    1.0.0b2  Fixed a bug where ::makeLinks() would create links out of URLs in HTML tags [wb, 2008-12-05]
- * @changes    1.0.0b   The initial implementation [wb, 2007-09-25]
  */
 class fHTML
 {
@@ -286,14 +276,6 @@ class fHTML
 
 		return FALSE;
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fHTML
-	 */
-	private function __construct() { }
 }
 
 

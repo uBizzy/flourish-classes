@@ -10,36 +10,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORM
  *
- * @version    1.0.0b29
- * @changes    1.0.0b29  Added ::registerActiveRecordStaticMethod() for static hooks in PHP 5.3 [jt, 2012-07-25]
- * @changes    1.0.0b28  Updated ::getColumnName() and ::getRecordName() to use fText if loaded [wb, 2011-02-02]
- * @changes    1.0.0b27  Added links to the detailed documentation for the parameters passed to hooks [wb, 2010-11-27]
- * @changes    1.0.0b26  Added ::getRelatedClass() for handling related classes in PHP 5.3 namespaces [wb, 2010-11-17]
- * @changes    1.0.0b25  Added support for PHP 5.3 namespaced fActiveRecord classes [wb, 2010-11-11]
- * @changes    1.0.0b24  Backwards Compatibility Break - Callbacks registered via ::registerRecordSetMethod() should now accept the `$method_name` in the position where the `$pointer` parameter used to be passed [wb, 2010-09-28]
- * @changes    1.0.0b23  Added the `'pre::replicate()'`, `'post::replicate()'` and `'cloned::replicate()'` hooks [wb, 2010-09-07]
- * @changes    1.0.0b22  Internal Backwards Compatibility Break - changed ::parseMethod() to not underscorize the subject of the method [wb, 2010-08-06]
- * @changes    1.0.0b21  Fixed some documentation to reflect the API changes from v1.0.0b9 [wb, 2010-07-14]
- * @changes    1.0.0b20  Added the ability to register a wildcard active record method for all classes [wb, 2010-04-22]
- * @changes    1.0.0b19  Added the method ::isClassMappedToTable() [wb, 2010-03-30]
- * @changes    1.0.0b18  Added the `post::loadFromIdentityMap()` hook [wb, 2010-03-14]
- * @changes    1.0.0b17  Changed ::enableSchemaCaching() to rely on fDatabase::clearCache() instead of explicitly calling fSQLTranslation::clearCache() [wb, 2010-03-09]
- * @changes    1.0.0b16  Backwards Compatibility Break - renamed ::addCustomClassToTableMapping() to ::mapClassToTable(). Added ::getDatabaseName() and ::mapClassToDatabase(). Updated code for new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
- * @changes    1.0.0b15  Added support for fActiveRecord to ::getRecordName() [wb, 2009-10-06]
- * @changes    1.0.0b14  Updated documentation for ::registerActiveRecordMethod() to include info about prefix method matches [wb, 2009-08-07]
- * @changes    1.0.0b13  Updated documentation for ::registerRecordSetMethod() [wb, 2009-07-14]
- * @changes    1.0.0b12  Updated ::callReflectCallbacks() to accept a class name instead of an object [wb, 2009-07-13]
- * @changes    1.0.0b11  Added ::registerInspectCallback() and ::callInspectCallbacks() [wb, 2009-07-13]
- * @changes    1.0.0b10  Fixed a bug with ::objectify() caching during NULL date/time/timestamp values and breaking further objectification [wb, 2009-06-18]
- * @changes    1.0.0b9   Added caching for performance and changed some method APIs to only allow class names instead of instances [wb, 2009-06-15]
- * @changes    1.0.0b8   Updated documentation to reflect removal of `$associate` parameter for callbacks passed to ::registerRecordSetMethod() [wb, 2009-06-02]
- * @changes    1.0.0b7   Added ::enableSchemaCaching() to replace fORMSchema::enableSmartCaching() [wb, 2009-05-04]
- * @changes    1.0.0b6   Added the ability to pass a class instance to ::addCustomClassTableMapping() [wb, 2009-02-23]
- * @changes    1.0.0b5   Backwards compatibility break - renamed ::addCustomTableClassMapping() to ::addCustomClassTableMapping() and swapped the parameters [wb, 2009-01-26]
- * @changes    1.0.0b4   Fixed a bug with retrieving fActiveRecord methods registered for all classes [wb, 2009-01-14]
- * @changes    1.0.0b3   Fixed a static method callback constant [wb, 2008-12-17]
- * @changes    1.0.0b2   Added ::replicate() and ::registerReplicateCallback() for fActiveRecord::replicate() [wb, 2008-12-12]
- * @changes    1.0.0b    The initial implementation [wb, 2007-08-04]
  */
 class fORM
 {
@@ -409,28 +379,36 @@ class fORM
 	 *
 	 * This method should be called right after fORMDatabase::attach().
 	 *
-	 * @param  fCache $cache          The object to cache schema information to
-	 * @param  string $database_name  The database to enable caching for
-	 * @param  string $key_token      This is a token that is used in cache keys to prevent conflicts for server-wide caches - when non-NULL the document root is used
+	 * @param  fCache $cache The object to cache schema information to
+	 * @param  string $database_name The database to enable caching for
+	 * @param  string $key_token This is a token that is used in cache keys to prevent conflicts for server-wide caches - when non-NULL the document root is used
+	 * @param  boolean $clear_on_exception Allows the schema to not be thrown out upon fUnexpectedExceptions. Defaults to true;
 	 * @return void
 	 */
-	static public function enableSchemaCaching($cache, $database_name='default', $key_token=NULL)
+    static public function enableSchemaCaching($cache, $database_name='default', $key_token=NULL, $clear_on_exception=TRUE)
 	{
 		if ($key_token === NULL) {
 			$key_token = $_SERVER['DOCUMENT_ROOT'];
 		}
+
 		$token = 'fORM::' . $database_name . '::' . $key_token . '::';
 
 		$db = fORMDatabase::retrieve('name:' . $database_name);
 		$db->enableCaching($cache, $token);
-		fException::registerCallback($db->clearCache, 'fUnexpectedException');
+
+		if ($clear_on_exception) {
+			fException::registerCallback($db->clearCache, 'fUnexpectedException');
+		}
 
 		$sql_translation = $db->getSQLTranslation();
 		$sql_translation->enableCaching($cache, $token);
 
 		$schema = fORMSchema::retrieve('name:' . $database_name);
 		$schema->enableCaching($cache, $token);
-		fException::registerCallback($schema->clearCache, 'fUnexpectedException');
+
+		if ($clear_on_exception) {
+			fException::registerCallback($schema->clearCache, 'fUnexpectedException');
+		}
 	}
 
 

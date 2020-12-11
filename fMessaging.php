@@ -10,15 +10,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fMessaging
  *
- * @version    1.0.0b8
- * @changes    1.0.0b8  [BREAK] Now messages always print as divs. Also added class option [jt, 2013-04-09]
- * @changes    1.0.0b7  Fixed a small PHPDoc error [wb, 2010-03-15]
- * @changes    1.0.0b6  Updated class to use new fSession API [wb, 2009-10-23]
- * @changes    1.0.0b5  Made the `$recipient` parameter optional for all methods [wb, 2009-07-08]
- * @changes    1.0.0b4  Added support for `'*'` and arrays of names to ::check() [wb, 2009-06-02]
- * @changes    1.0.0b3  Updated class to use new fSession API [wb, 2009-05-08]
- * @changes    1.0.0b2  Changed ::show() to accept more than one message name, or * for all messages [wb, 2009-01-12]
- * @changes    1.0.0b   The initial implementation [wb, 2008-03-05]
  */
 class fMessaging
 {

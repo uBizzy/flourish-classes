@@ -18,37 +18,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fEmail
  *
- * @version    1.0.0b30
- * @changes    1.0.0b30  Changed methods to return instance for method chaining [n, 2011-09-12]
- * @changes    1.0.0b29  Changed ::combineNameEmail() to be a static method and to be exposed publicly for use by other classes [wb, 2011-07-26]
- * @changes    1.0.0b28  Fixed ::addAttachment() and ::addRelatedFile() to properly handle duplicate filenames [wb, 2011-05-17]
- * @changes    1.0.0b27  Fixed a bug with generating FQDNs on some Windows machines [wb, 2011-02-24]
- * @changes    1.0.0b26  Added ::addCustomerHeader() [wb, 2011-02-02]
- * @changes    1.0.0b25  Fixed a bug with finding the FQDN on non-Windows machines [wb, 2011-01-19]
- * @changes    1.0.0b24  Backwards Compatibility Break - the `$contents` parameter of ::addAttachment() is now first instead of third, ::addAttachment() will now accept fFile objects for the `$contents` parameter, added ::addRelatedFile() [wb, 2010-12-01]
- * @changes    1.0.0b23  Fixed a bug on Windows where emails starting with a `.` would have the `.` removed [wb, 2010-09-11]
- * @changes    1.0.0b22  Revamped the FQDN code and added ::getFQDN() [wb, 2010-09-07]
- * @changes    1.0.0b21  Added a check to prevent permissions warnings when getting the FQDN on Windows machines [wb, 2010-09-02]
- * @changes    1.0.0b20  Fixed ::send() to only remove the name of a recipient when dealing with the `mail()` function on Windows and to leave it when using fSMTP [wb, 2010-06-22]
- * @changes    1.0.0b19  Changed ::send() to return the message id for the email, fixed the email regexes to require [] around IPs [wb, 2010-05-05]
- * @changes    1.0.0b18  Fixed the name of the static method ::unindentExpand() [wb, 2010-04-28]
- * @changes    1.0.0b17  Added the static method ::unindentExpand() [wb, 2010-04-26]
- * @changes    1.0.0b16  Added support for sending emails via fSMTP [wb, 2010-04-20]
- * @changes    1.0.0b15  Added the `$unindent_expand_constants` parameter to ::setBody(), added ::loadBody() and ::loadHTMLBody(), fixed HTML emails with attachments [wb, 2010-03-14]
- * @changes    1.0.0b14  Changed ::send() to not double `.`s at the beginning of lines on Windows since it seemed to break things rather than fix them [wb, 2010-03-05]
- * @changes    1.0.0b13  Fixed the class to work when safe mode is turned on [wb, 2009-10-23]
- * @changes    1.0.0b12  Removed duplicate MIME-Version headers that were being included in S/MIME encrypted emails [wb, 2009-10-05]
- * @changes    1.0.0b11  Updated to use the new fValidationException API [wb, 2009-09-17]
- * @changes    1.0.0b10  Fixed a bug with sending both an HTML and a plaintext body [bb-imarc, 2009-06-18]
- * @changes    1.0.0b9   Fixed a bug where the MIME headers were not being set for all emails [wb, 2009-06-12]
- * @changes    1.0.0b8   Added the method ::clearRecipients() [wb, 2009-05-29]
- * @changes    1.0.0b7   Email names with UTF-8 characters are now properly encoded [wb, 2009-05-08]
- * @changes    1.0.0b6   Fixed a bug where <> quoted email addresses in validation messages were not showing [wb, 2009-03-27]
- * @changes    1.0.0b5   Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b4   The recipient error message in ::validate() no longer contains a typo [wb, 2009-02-09]
- * @changes    1.0.0b3   Fixed a bug with missing content in the fValidationException thrown by ::validate() [wb, 2009-01-14]
- * @changes    1.0.0b2   Fixed a few bugs with sending S/MIME encrypted/signed emails [wb, 2009-01-10]
- * @changes    1.0.0b    The initial implementation [wb, 2008-06-23]
  */
 class fEmail
 {
@@ -525,13 +494,6 @@ class fEmail
 	private $html_body = NULL;
 
 	/**
-	 * The Message-ID header for the email
-	 *
-	 * @var string
-	 */
-	private $message_id = NULL;
-
-	/**
 	 * The plaintext body of the email
 	 *
 	 * @var string
@@ -617,17 +579,6 @@ class fEmail
 
 
 	/**
-	 * Initializes fEmail for creating message ids
-	 *
-	 * @return fEmail
-	 */
-	public function __construct()
-	{
-		$this->message_id = '<' . fCryptography::randomString(10, 'hexadecimal') . '.' . time() . '@' . self::getFQDN() . '>';
-	}
-
-
-	/**
 	 * All requests that hit this method should be requests for callbacks
 	 *
 	 * @internal
@@ -690,7 +641,7 @@ class fEmail
 			$filename = $this->generateNewFilename($filename);
 		}
 
-		$cid = count($this->related_files) . '.' . substr($this->message_id, 1, -1);
+		$cid = count($this->related_files) . '.' . fCryptography::randomString(10, 'hexadecimal');
 
 		$this->related_files[$filename] = array(
 			'mime-type'  => $mime_type,
@@ -1202,6 +1153,23 @@ class fEmail
 
 
 	/**
+	 * Get the actual submission e-mail taking into account sender
+	 *
+	 * @return string The submission e-mail, NULL if no submitter has been set
+	 */
+	public function getSubmissionEmail()
+	{
+		if (preg_match(self::NAME_EMAIL_REGEX, $this->sender_email, $match)) {
+			return $match[2];
+		} elseif (preg_match(self::NAME_EMAIL_REGEX, $this->from_email, $match)) {
+			return $match[2];
+		} else {
+			return NULL;
+		}
+	}
+
+
+	/**
 	 * Loads the plaintext version of the email body from a file and applies replacements
 	 *
 	 * The should contain either ASCII or UTF-8 encoded text. Please see
@@ -1369,6 +1337,8 @@ class fEmail
 	{
 		$this->validate();
 
+		$message_id = '<' . fCryptography::randomString(10, 'hexadecimal') . '.' . time() . '@' . self::getFQDN() . '>';
+
 		// The mail() function on Windows doesn't support names in headers so
 		// we must strip them down to just the email address
 		if ($connection === NULL && fCore::checkOS('windows')) {
@@ -1394,7 +1364,7 @@ class fEmail
 		$to = substr(trim($this->buildMultiAddressHeader("To", $this->to_emails)), 4);
 
 		$top_level_boundary = $this->createBoundary();
-		$headers            = $this->createHeaders($top_level_boundary, $this->message_id);
+		$headers            = $this->createHeaders($top_level_boundary, $message_id);
 
 		$subject = str_replace(array("\r", "\n"), '', $this->subject);
 		$subject = self::makeEncodedWord($subject, 9);
@@ -1415,7 +1385,7 @@ class fEmail
 			$to_emails = array_merge($to_emails, $this->extractEmails($this->bcc_emails));
 			$from = $this->bounce_to_email ? $this->bounce_to_email : current($this->extractEmails(array($this->from_email)));
 			$connection->send($from, $to_emails, "To: " . $to . "\r\nSubject: " . $subject . "\r\n" . $headers, $body);
-			return $this->message_id;
+			return $message_id;
 		}
 
 		// Sendmail when not in safe mode will allow you to set the envelope from address via the -f parameter
@@ -1481,7 +1451,7 @@ class fEmail
 			);
 		}
 
-		return $this->message_id;
+		return $message_id;
 	}
 
 

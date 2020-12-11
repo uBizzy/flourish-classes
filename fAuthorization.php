@@ -9,13 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fAuthorization
  *
- * @version    1.0.0b6
- * @changes    1.0.0b6  Fixed ::checkIP() to not trigger a notice when `$_SERVER['REMOTE_ADDR']` is not set [wb, 2011-05-10]
- * @changes    1.0.0b5  Added ::getLoginPage() [wb, 2010-03-09]
- * @changes    1.0.0b4  Updated class to use new fSession API [wb, 2009-10-23]
- * @changes    1.0.0b3  Updated class to use new fSession API [wb, 2009-05-08]
- * @changes    1.0.0b2  Fixed a bug with using named IP ranges in ::checkIP() [wb, 2009-01-10]
- * @changes    1.0.0b   The initial implementation [wb, 2007-06-14]
  */
 class fAuthorization
 {
@@ -26,6 +19,7 @@ class fAuthorization
 	const checkIP          = 'fAuthorization::checkIP';
 	const checkLoggedIn    = 'fAuthorization::checkLoggedIn';
 	const destroyUserInfo  = 'fAuthorization::destroyUserInfo';
+	const getAuthLevels    = 'fAuthorization::getAuthLevels';
 	const getLoginPage     = 'fAuthorization::getLoginPage';
 	const getRequestedURL  = 'fAuthorization::getRequestedURL';
 	const getUserACLs      = 'fAuthorization::getUserACLs';
@@ -239,6 +233,14 @@ class fAuthorization
 		fSession::delete(__CLASS__ . '::user_acls');
 		fSession::delete(__CLASS__ . '::user_token');
 		fSession::delete(__CLASS__ . '::requested_url');
+	}
+
+	/**
+	 * Gets the available auth levels for all users.
+	 */
+	static public function getAuthLevels()
+	{	
+		return array_keys(self::$levels);
 	}
 
 
@@ -510,14 +512,6 @@ class fAuthorization
 			);
 		}
 	}
-
-
-	/**
-	 * Forces use as a static class
-	 *
-	 * @return fAuthorization
-	 */
-	private function __construct() { }
 }
 
 

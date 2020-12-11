@@ -13,15 +13,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fXML
  *
- * @version    1.0.0b8
- * @changes    1.0.0b8  Fixed a method signature [wb, 2011-08-24]
- * @changes    1.0.0b7  Added a workaround for iconv having issues in MAMP 1.9.4+ [wb, 2011-07-26]
- * @changes    1.0.0b6  Updated class to use fCore::startErrorCapture() instead of `error_reporting()` [wb, 2010-08-09]
- * @changes    1.0.0b5  Added the `$fix_entities_encoding` parameter to ::__construct() [cr-imarc+wb, 2010-08-08]
- * @changes    1.0.0b4  Updated the class to automatically add a `__` prefix for the default namespace and to use that for attribute and child element access [wb, 2010-04-06]
- * @changes    1.0.0b3  Added the `$http_timeout` parameter to ::__construct() [wb, 2009-09-16]
- * @changes    1.0.0b2  Added instance functionality for reading of XML files [wb, 2009-09-01]
- * @changes    1.0.0b   The initial implementation [wb, 2008-01-13]
  */
 class fXML implements ArrayAccess
 {

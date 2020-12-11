@@ -48,48 +48,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fDatabase
  *
- * @version    1.0.0b41
- * @changes    1.0.0b41  Fixed an array to string conversion notice [wb, 2012-09-21]
- * @changes    1.0.0b40  Fixed a bug with notices being triggered when failing to connect to a SQLite database [wb, 2011-06-20]
- * @changes    1.0.0b39  Fixed a bug with detecting some MySQL database version numbers [wb, 2011-05-24]
- * @changes    1.0.0b38  Backwards Compatibility Break - callbacks registered to the `extracted` hook via ::registerHookCallback() no longer receive the `$strings` parameter, instead all strings are added into the `$values` parameter - added ::getVersion(), fixed a bug with SQLite messaging, fixed a bug with ::__destruct(), improved handling of transactional queries, added ::close(), enhanced class to throw four different exceptions for different connection errors, silenced PHP warnings upon connection error [wb, 2011-05-09]
- * @changes    1.0.0b37  Fixed usage of the mysqli extension to only call mysqli_set_charset() if it exists [wb, 2011-03-04]
- * @changes    1.0.0b36  Updated ::escape() and methods that use ::escape() to handle float values that don't contain a digit before or after the . [wb, 2011-02-01]
- * @changes    1.0.0b35  Updated the class to replace `LIMIT` and `OFFSET` value placeholders in the SQL with their values before translating since most databases that translate `LIMIT` statements need to move or add values together [wb, 2011-01-11]
- * @changes    1.0.0b34  Fixed a bug with creating translated prepared statements [wb, 2011-01-09]
- * @changes    1.0.0b33  Added code to explicitly set the connection encoding for the mysql and mysqli extensions since some PHP installs don't see to fully respect `SET NAMES` [wb, 2010-12-06]
- * @changes    1.0.0b32  Fixed handling auto-incrementing values for Oracle when the trigger was on `INSERT OR UPDATE` instead of just `INSERT` [wb, 2010-12-04]
- * @changes    1.0.0b31  Fixed handling auto-incrementing values for MySQL when the `INTO` keyword is left out of an `INSERT` statement [wb, 2010-11-04]
- * @changes    1.0.0b30  Fixed the pgsql, mssql and mysql extensions to force a new connection instead of reusing an existing one [wb, 2010-08-17]
- * @changes    1.0.0b29  Backwards Compatibility Break - removed ::enableSlowQueryWarnings(), added ability to replicate via ::registerHookCallback() [wb, 2010-08-10]
- * @changes    1.0.0b28  Backwards Compatibility Break - removed ODBC support. Added support for the `pdo_ibm` extension. [wb, 2010-07-31]
- * @changes    1.0.0b27  Fixed a bug with running multiple copies of a SQL statement with string values through a single ::translatedQuery() call [wb, 2010-07-14]
- * @changes    1.0.0b26  Updated the class to use new fCore functionality [wb, 2010-07-05]
- * @changes    1.0.0b25  Added IBM DB2 support [wb, 2010-04-13]
- * @changes    1.0.0b24  Fixed an auto-incrementing transaction bug with Oracle and debugging issues with all databases [wb, 2010-03-17]
- * @changes    1.0.0b23  Resolved another bug with capturing auto-incrementing values for PostgreSQL and Oracle [wb, 2010-03-15]
- * @changes    1.0.0b22  Changed ::clearCache() to also clear the cache on the fSQLTranslation [wb, 2010-03-09]
- * @changes    1.0.0b21  Added ::execute() for result-less SQL queries, ::prepare() and ::translatedPrepare() to create fStatement objects for prepared statements, support for prepared statements in ::query() and ::unbufferedQuery(), fixed default caching key for ::enableCaching() [wb, 2010-03-02]
- * @changes    1.0.0b20  Added a parameter to ::enableCaching() to provide a key token that will allow cached values to be shared between multiple databases with the same schema [wb, 2009-10-28]
- * @changes    1.0.0b19  Added support for escaping identifiers (column and table names) to ::escape(), added support for database schemas, rewrote internal SQL string spliting [wb, 2009-10-22]
- * @changes    1.0.0b18  Updated the class for the new fResult and fUnbufferedResult APIs, fixed ::unescape() to not touch NULLs [wb, 2009-08-12]
- * @changes    1.0.0b17  Added the ability to pass an array of all values as a single parameter to ::escape() instead of one value per parameter [wb, 2009-08-11]
- * @changes    1.0.0b16  Fixed PostgreSQL and Oracle from trying to get auto-incrementing values on inserts when explicit values were given [wb, 2009-08-06]
- * @changes    1.0.0b15  Fixed a bug where auto-incremented values would not be detected when table names were quoted [wb, 2009-07-15]
- * @changes    1.0.0b14  Changed ::determineExtension() and ::determineCharacterSet() to be protected instead of private [wb, 2009-07-08]
- * @changes    1.0.0b13  Updated ::escape() to accept arrays of values for insertion into full SQL strings [wb, 2009-07-06]
- * @changes    1.0.0b12  Updates to ::unescape() to improve performance [wb, 2009-06-15]
- * @changes    1.0.0b11  Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b10  Changed date/time/timestamp escaping from `strtotime()` to fDate/fTime/fTimestamp for better localization support [wb, 2009-06-01]
- * @changes    1.0.0b9   Fixed a bug with ::escape() where floats that start with a . were encoded as `NULL` [wb, 2009-05-09]
- * @changes    1.0.0b8   Added Oracle support, change PostgreSQL code to no longer cause lastval() warnings, added support for arrays of values to ::escape() [wb, 2009-05-03]
- * @changes    1.0.0b7   Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b6   Fixed a bug with executing transaction queries when using the mysqli extension [wb, 2009-02-12]
- * @changes    1.0.0b5   Changed @ error suppression operator to `error_reporting()` calls [wb, 2009-01-26]
- * @changes    1.0.0b4   Added a few error suppression operators back in so that developers don't get errors and exceptions [wb, 2009-01-14]
- * @changes    1.0.0b3   Removed some unnecessary error suppresion operators [wb, 2008-12-11]
- * @changes    1.0.0b2   Fixed a bug with PostgreSQL when using the PDO extension and executing an INSERT statement [wb, 2008-12-11]
- * @changes    1.0.0b    The initial implementation [wb, 2007-09-25]
  */
 class fDatabase
 {
@@ -214,6 +172,13 @@ class fDatabase
 	 * @var string
 	 */
 	private $password;
+
+	/**
+	 * Whether of not the connection should be persistent
+	 *
+	 * @var boolean
+	 */
+	private $persistent;
 
 	/**
 	 * The port number for the host
@@ -645,7 +610,12 @@ class fDatabase
 			fCore::startErrorCapture();
 
 			$separator        = (fCore::checkOS('windows')) ? ',' : ':';
-			$this->connection = mssql_connect(($this->port) ? $this->host . $separator . $this->port : $this->host, $this->username, $this->password, TRUE);
+
+			if (!$this->persistent) {
+				$this->connection = mssql_connect(($this->port) ? $this->host . $separator . $this->port : $this->host, $this->username, $this->password, TRUE);
+			} else {
+				$this->connection = mssql_pconnect(($this->port) ? $this->host . $separator . $this->port : $this->host, $this->username, $this->password);
+			}
 
 			if ($this->connection !== FALSE && mssql_select_db($this->database, $this->connection) === FALSE) {
 				$this->connection = FALSE;
@@ -765,7 +735,11 @@ class fDatabase
 
 			fCore::startErrorCapture();
 
-			$this->connection = pg_connect($connection_string, PGSQL_CONNECT_FORCE_NEW);
+			if (!$this->persistent) {
+                $this->connection = pg_connect($connection_string, PGSQL_CONNECT_FORCE_NEW);
+            } else {
+                $this->connection = pg_pconnect($connection_string);
+            }
 
 			$errors = fCore::stopErrorCapture();
 		}
@@ -1027,6 +1001,20 @@ class fDatabase
 	public function enableDebugging($flag)
 	{
 		$this->debug = (boolean) $flag;
+	}
+
+
+	/**
+	 * Sets if the database connection should be persistent
+	 *
+	 * Currently only supported for mssql, postgres
+	 *
+	 * @param boolean $flag If the connection should be persistent
+	 * @return void
+	 */
+	public function enablePersistence($flag)
+	{
+		$this->persistent = (boolean) $flag;
 	}
 
 
@@ -1392,7 +1380,7 @@ class fDatabase
 							// so instead store a ?
 							default:
 								$output .= '?';
-								continue;
+								continue 2;
 						}
 						if ($last_type == 'nchar') {
 							$output .= '+';

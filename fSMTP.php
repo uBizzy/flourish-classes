@@ -9,23 +9,11 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fSMTP
  *
- * @version    1.0.0b11
- * @changes    1.0.0b11  Enhanced the error checking for ::write() [wb, 2011-06-03]
- * @changes    1.0.0b10  Added code to work around PHP bug #42682 (http://bugs.php.net/bug.php?id=42682) where `stream_select()` doesn't work on 64bit machines from PHP 5.2.0 to 5.2.5, improved timeouts while reading data [wb, 2011-01-10]
- * @changes    1.0.0b9   Fixed a bug where lines starting with `.` and containing other content would have the `.` stripped [wb, 2010-09-11]
- * @changes    1.0.0b8   Updated the class to use fEmail::getFQDN() [wb, 2010-09-07]
- * @changes    1.0.0b7   Updated class to use new fCore::startErrorCapture() functionality [wb, 2010-08-09]
- * @changes    1.0.0b6   Updated the class to use new fCore functionality [wb, 2010-07-05]
- * @changes    1.0.0b5   Hacked around a bug in PHP 5.3 on Windows [wb, 2010-06-22]
- * @changes    1.0.0b4   Updated the class to not connect and authenticate until a message is sent, moved message id generation in fEmail [wb, 2010-05-05]
- * @changes    1.0.0b3   Fixed a bug with connecting to servers that send an initial response of `220-` and instead of `220 ` [wb, 2010-04-26]
- * @changes    1.0.0b2   Fixed a bug where `STARTTLS` would not be triggered if it was last in the SMTP server's list of supported extensions [wb, 2010-04-20]
- * @changes    1.0.0b    The initial implementation [wb, 2010-04-20]
  */
 class fSMTP
 {
 	/**
-	 * The authorization methods that are valid for this server
+	 * The preferred authorization methods
 	 *
 	 * @var array
 	 */
@@ -186,6 +174,39 @@ class fSMTP
 		$this->password = $password;
 	}
 
+	/**
+	 * Sets the method(s) by which the object will authenticate.
+	 *
+	 * This method works with SMTP authentication. It accepts one or more authentication
+	 * methods (DIGEST-MD5, CRAM-MD5, LOGIN and PLAIN). If one or more of these params is
+	 * passed to the method the object will attempt to use only those authentication methods
+	 * to connect, if the server supports them.
+	 *
+	 * By calling ->setPreferredAuthMethods('CRAM-MD5', 'LOGIN', 'PLAIN') the class not to
+	 * use DIGEST-MD5 authentication, even if the server supports it, unless DIGEST-MD5 is
+	 * the ONLY method the server supports.
+	 *
+	 * @param string
+	 * @param string
+	 * @param string
+	 * @param string
+	 * @return void
+	 */
+	public function setPreferredAuthMethods()
+	{
+		$valid_methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
+		$args          = func_get_args();
+
+		$this->auth_methods = array();
+
+		foreach ($args as $method) {
+			$method = strtoupper($method);
+			if (in_array($method, $valid_methods)) {
+				array_push($this->auth_methods, $method);
+			}
+		}
+	}
+
 
 	/**
 	 * Closes the connection to the SMTP server
@@ -279,6 +300,14 @@ class fSMTP
 
 		if (!$auth_methods || !$this->username) {
 			return;
+		}
+
+		if (!empty($this->auth_methods)) {
+			$temp = array_intersect($this->auth_methods, $auth_methods); // Only valid preferred methods
+
+			if (!empty($temp)) {
+				$auth_methods = $temp;
+			}
 		}
 
 		if (in_array('DIGEST-MD5', $auth_methods)) {

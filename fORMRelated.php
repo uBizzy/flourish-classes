@@ -14,55 +14,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMRelated
  *
- * @version    1.0.0b47
- * @changes    1.0.0b47  Fixed issues with set_null db constraints and one-to-many table relationships [jt, 2013-05-22]
- * @changes    1.0.0b46  Fixed route issue with linkRecord. [jt, 2013-04-30]
- * @changes    1.0.0b45  Added the `$recursive` parameter to ::populateRecords() [wb, 2011-09-16]
- * @changes    1.0.0b44  Added missing information for has and list methods to ::reflect() [wb, 2011-09-07]
- * @changes    1.0.0b43  Fixed some bugs in handling relationships between PHP 5.3 namespaced classes [wb, 2011-05-26]
- * @changes    1.0.0b42  Fixed a bug with ::associateRecords() not associating record set via primary key [wb, 2011-05-23]
- * @changes    1.0.0b41  Fixed a bug in generating errors messages for many-to-many relationships [wb, 2011-03-07]
- * @changes    1.0.0b40  Updated ::getRelatedRecordName() to use fText if loaded [wb, 2011-02-02]
- * @changes    1.0.0b39  Fixed a bug with ::validate() not properly removing validation messages about a related primary key value not being present yet, if the column and related column names were different [wb, 2010-11-24]
- * @changes    1.0.0b38  Updated ::overrideRelatedRecordName() to prefix any namespace from `$class` to `$related_class` if not already present [wb, 2010-11-24]
- * @changes    1.0.0b37  Fixed a documentation typo [wb, 2010-11-04]
- * @changes    1.0.0b36  Fixed ::getPrimaryKeys() to not throw SQL exceptions [wb, 2010-10-20]
- * @changes    1.0.0b35  Backwards Compatibility Break - changed the validation messages array to use nesting for child records [wb-imarc+wb, 2010-10-03]
- * @changes    1.0.0b35  Updated ::getPrimaryKeys() to always return primary keys in a consistent order when no order bys are specified [wb, 2010-07-26]
- * @changes    1.0.0b34  Updated the class to work with fixes in fORMRelated [wb, 2010-07-22]
- * @changes    1.0.0b33  Fixed the related table populate action to use the plural underscore_notation version of the related class name [wb, 2010-07-08]
- * @changes    1.0.0b32  Backwards Compatibility Break - related table populate action now use the underscore_notation version of the class name instead of the related table name, allowing for related tables in non-standard schemas [wb, 2010-06-23]
- * @changes    1.0.0b31  Fixed ::reflect() to properly show parameters for associate methods [wb, 2010-06-08]
- * @changes    1.0.0b30  Fixed a bug where related record error messages could be overwritten if there were multiple related records with the same error [wb, 2010-05-29]
- * @changes    1.0.0b29  Changed validation messages array to use column name keys [wb, 2010-05-26]
- * @changes    1.0.0b28  Updated ::associateRecords() to accept just a single fActiveRecord [wb, 2010-05-06]
- * @changes    1.0.0b27  Updated the class to force configure classes before peforming actions with them [wb, 2010-03-30]
- * @changes    1.0.0b26  Fixed ::reflect() to show the proper return values for `associate`, `link` and `populate` methods [wb, 2010-03-15]
- * @changes    1.0.0b25  Fixed a bug when storing a one-to-one related record with different column names on each end of the relationship [wb, 2010-03-04]
- * @changes    1.0.0b24  Added the ability to associate a single record via primary key [wb, 2010-03-03]
- * @changes    1.0.0b23  Fixed a column aliasing issue with SQLite [wb, 2010-01-25]
- * @changes    1.0.0b22  Fixed a bug with associating a non-contiguous array of fActiveRecord objects [wb, 2009-12-17]
- * @changes    1.0.0b21  Added support for the $force_cascade parameter of fActiveRecord::store(), added ::hasRecords() and fixed a bug with creating non-existent one-to-one related records [wb, 2009-12-16]
- * @changes    1.0.0b20  Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
- * @changes    1.0.0b19  Internal Backwards Compatibility Break - Added the `$class` parameter to ::storeManyToMany() - also fixed ::countRecords() to work across all databases, changed SQL statements to use value placeholders, identifier escaping and support schemas [wb, 2009-10-22]
- * @changes    1.0.0b18  Fixed a bug in ::countRecords() that would occur when multiple routes existed to the table being counted [wb, 2009-10-05]
- * @changes    1.0.0b17  Updated code for new fRecordSet API [wb, 2009-09-16]
- * @changes    1.0.0b16  Fixed a bug with ::createRecord() not creating non-existent record when the related value is NULL [wb, 2009-08-25]
- * @changes    1.0.0b15  Fixed a bug with ::createRecord() where foreign keys with a different column and related column name would not load properly [wb, 2009-08-17]
- * @changes    1.0.0b14  Fixed a bug with ::createRecord() when a foreign key constraint is on a column other than the primary key [wb, 2009-08-10]
- * @changes    1.0.0b13  ::setOrderBys() now (properly) only recognizes *-to-many relationships [wb, 2009-07-31]
- * @changes    1.0.0b12  Changed how related record values are set and how related validation messages are ignored because of recursive relationships [wb, 2009-07-29]
- * @changes    1.0.0b11  Fixed some bugs with one-to-one relationships [wb, 2009-07-21]
- * @changes    1.0.0b10  Fixed a couple of bugs with validating related records [wb, 2009-06-26]
- * @changes    1.0.0b9   Fixed a bug where ::store() would not save associations with no related records [wb, 2009-06-23]
- * @changes    1.0.0b8   Changed ::associateRecords() to work for *-to-many instead of just many-to-many relationships [wb, 2009-06-17]
- * @changes    1.0.0b7   Updated code for new fORM API, fixed API documentation bugs [wb, 2009-06-15]
- * @changes    1.0.0b6   Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]
- * @changes    1.0.0b5   Added ::getPrimaryKeys() and ::setPrimaryKeys(), renamed ::setRecords() to ::setRecordSet() and ::tallyRecords() to ::setCount() [wb, 2009-06-02]
- * @changes    1.0.0b4   Updated code to handle new association method for related records and new `$related_records` structure, added ::store() and ::validate() [wb, 2009-06-02]
- * @changes    1.0.0b3   ::associateRecords() can now accept an array of records or primary keys instead of only an fRecordSet [wb, 2009-06-01]
- * @changes    1.0.0b2   ::populateRecords() now accepts any input field keys instead of sequential ones starting from 0 [wb, 2009-05-03]
- * @changes    1.0.0b    The initial implementation [wb, 2007-12-30]
  */
 class fORMRelated
 {
@@ -133,7 +84,7 @@ class fORMRelated
 	 * @param  string                             $route             The route to use between the current class and the related class
 	 * @return void
 	 */
-	static public function associateRecord($class, &$related_records, $related_class, $record, $route=NULL)
+	static public function associateRecord($class, &$related_records, $related_class, $record=NULL, $route=NULL, $flag=TRUE)
 	{
 		fActiveRecord::validateClass($related_class);
 		fActiveRecord::forceConfigure($related_class);
@@ -152,10 +103,13 @@ class fORMRelated
 
 		$schema  = fORMSchema::retrieve($class);
 		$records = fRecordSet::buildFromArray($related_class, $records);
-		$route   = fORMSchema::getRouteName($schema, $table, $related_table, $route, 'one-to-one');
+		$route   = fORMSchema::getRouteName($schema, $table, $related_table, $route, '*-to-one');
 
 		self::setRecordSet($class, $related_records, $related_class, $records, $route);
-		self::flagForAssociation($class, $related_records, $related_class, $route);
+
+		if ($flag) {
+			self::flagForAssociation($class, $related_records, $related_class, $route);
+		}
 	}
 
 
@@ -206,6 +160,7 @@ class fORMRelated
 		} else {
 			self::setRecordSet($class, $related_records, $related_class, $records, $route);
 		}
+
 		self::flagForAssociation($class, $related_records, $related_class, $route);
 	}
 
@@ -392,30 +347,30 @@ class fORMRelated
 
 		$relationship = fORMSchema::getRoute($schema, $table, $related_table, $route, '*-to-one');
 		$route        = $relationship['column'];
+		$star_to_one  = FALSE;
 
 		// Determine if the relationship is one-to-one
-		if (isset(self::$cache['one-to-one::' . $table . '::' . $related_table . '::' . $route])) {
-			$one_to_one = self::$cache['one-to-one::' . $table . '::' . $related_table . '::' . $route];
-
+		if (isset(self::$cache['*-to-one::' . $table . '::' . $related_table . '::' . $route])) {
+			$star_to_one  = self::$cache['*-to-one::' . $table . '::' . $related_table . '::' . $route];
 		} else {
-			$one_to_one = FALSE;
-			$one_to_one_relationships = fORMSchema::getRoutes($schema, $table, $related_table, 'one-to-one');
-			foreach ($one_to_one_relationships as $one_to_one_relationship) {
-				if ($relationship['column'] == $one_to_one_relationship['column']) {
-					$one_to_one = TRUE;
+			$star_to_one_relationships = fORMSchema::getRoutes($schema, $table, $related_table, '*-to-one');
+			foreach ($star_to_one_relationships as $star_to_one_relationship) {
+				if ($table != $related_table && $relationship['column'] == $star_to_one_relationship['column']) {
+					$star_to_one = TRUE;
 					break;
 				}
 			}
 
-			self::$cache['one-to-one::' . $table . '::' . $related_table . '::' . $route] = $one_to_one;
+			self::$cache['*-to-one::' . $table . '::' . $related_table . '::' . $route] = $star_to_one;
 		}
 
 		// One-to-one records are stored in the related records array to support populating
-		if ($one_to_one) {
+		if ($star_to_one) {
 			if (isset($related_records[$related_table][$route]['record_set'])) {
 				if ($related_records[$related_table][$route]['record_set']->count()) {
 					return $related_records[$related_table][$route]['record_set'][0];
 				}
+
 				return new $related_class();
 			}
 
@@ -902,23 +857,30 @@ class fORMRelated
 	{
 		fActiveRecord::validateClass($related_class);
 		fActiveRecord::forceConfigure($related_class);
-		
+
 		$table           = fORM::tablize($class);
 		$related_table   = fORM::tablize($related_class);
 		$schema          = fORMSchema::retrieve($class);
 		$pk_columns      = $schema->getKeys($related_table, 'primary');
-		
+
 		$first_pk_column = self::determineFirstPKColumn($class, $related_class, $route);
-		
+
 		$filter          = self::determineRequestFilter($class, $related_class, $route);
 		$pk_field        = $filter . $first_pk_column;
-		
-		$input_keys = array_keys(fRequest::get($pk_field, 'array', array()));
-		$records    = array();
-		
+
+		$records         = array();
+		$input_keys      = array();
+
+		if (fRequest::check($pk_field, TRUE)) {
+			$related_keys = fRequest::get($pk_field);
+			$input_keys   = is_array($related_keys)
+				? array_keys($related_keys)
+				: array(NULL);
+		}
+
 		foreach ($input_keys as $input_key) {
 			fRequest::filter($filter, $input_key);
-			
+
 			// Try to load the value from the database first
 			try {
 				if (sizeof($pk_columns) == 1) {
@@ -929,19 +891,19 @@ class fORMRelated
 						$primary_key_values[$pk_column] = fRequest::get($pk_column);
 					}
 				}
-				
+
 				$record = new $related_class($primary_key_values);
-				
+
 			} catch (fNotFoundException $e) {
 				$record = new $related_class();
 			}
-			
+
 			$record->populate($recursive);
 			$records[] = $record;
-			
+
 			fRequest::unfilter();
 		}
-		
+
 		$record_set = fRecordSet::buildFromArray($related_class, $records);
 		self::setRecordSet($class, $related_records, $related_class, $record_set, $route);
 		self::flagForAssociation($class, $related_records, $related_class, $route);
@@ -1459,7 +1421,7 @@ class fORMRelated
 		$related_table = fORM::tablize($related_class);
 
 		$schema = fORMSchema::retrieve($class);
-		$route  = fORMSchema::getRouteName($schema, $table, $related_table, $route, '!many-to-one');
+		$route  = fORMSchema::getRouteName($schema, $table, $related_table, $route);
 
 		if (!isset($related_records[$related_table])) {
 			$related_records[$related_table] = array();
@@ -1639,7 +1601,7 @@ class fORMRelated
 			}
 
 			$object_to_delete->delete($force_cascade);
-			
+
 		}
 
 		$set_method_name = 'set' . fGrammar::camelize($relationship['related_column'], TRUE);

@@ -9,10 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fMoney
  *
- * @version    1.0.0b3
- * @changes    1.0.0b3  Added the `$remove_zero_fraction` parameter to ::format() [wb, 2010-06-09]
- * @changes    1.0.0b2  Fixed a bug with calling ::format() when a format callback is set, fixed `NULL` `$element` handling in ::getCurrencyInfo() [wb, 2009-03-24]
- * @changes    1.0.0b   The initial implementation [wb, 2008-08-10]
  */
 class fMoney
 {

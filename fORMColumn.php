@@ -9,22 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMColumn
  *
- * @version    1.0.0b15
- * @changes    1.0.0b15  Fixed a bug with empty string email values passing through required validation [wb, 2011-07-29]
- * @changes    1.0.0b14  Updated code to work with the new fORM API [wb, 2010-08-06]
- * @changes    1.0.0b13  Fixed ::reflect() to include some missing parameters [wb, 2010-06-08]
- * @changes    1.0.0b12  Changed validation messages array to use column name keys [wb, 2010-05-26]
- * @changes    1.0.0b11  Fixed a bug with ::prepareLinkColumn() returning `http://` for empty link columns and not adding `http://` to links that contained a /, but did not start with it [wb, 2010-03-16]
- * @changes    1.0.0b10  Fixed ::reflect() to specify the value returned from `set` and `generate` methods, changed ::generate() methods to return the newly generated string [wb, 2010-03-15]
- * @changes    1.0.0b9   Changed email columns to be automatically trimmed if they are a value email address surrounded by whitespace [wb, 2010-03-14]
- * @changes    1.0.0b8   Made the validation on link columns a bit more strict [wb, 2010-03-09]
- * @changes    1.0.0b7   Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
- * @changes    1.0.0b6   Changed SQL statements to use value placeholders, identifier escaping and schema support [wb, 2009-10-22]
- * @changes    1.0.0b5   Updated to use new fORM::registerInspectCallback() method [wb, 2009-07-13]
- * @changes    1.0.0b4   Updated code for new fORM API [wb, 2009-06-15]
- * @changes    1.0.0b3   Updated code to use new fValidationException::formatField() method [wb, 2009-06-04]
- * @changes    1.0.0b2   Fixed a bug with objectifying number columns [wb, 2008-11-24]
- * @changes    1.0.0b    The initial implementation [wb, 2008-05-27]
  */
 class fORMColumn
 {
@@ -822,8 +806,8 @@ class fORMColumn
 			}
 
 			$ip_regex       = '(?:(?:[01]?\d?\d|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d?\d|2[0-4]\d|25[0-5])';
-			$hostname_regex = '[a-z]+(?:[a-z0-9\-]*[a-z0-9]\.?|\.)*';
-			$domain_regex   = '([a-z]+([a-z0-9\-]*[a-z0-9])?\.)+[a-z]{2,}';
+			$hostname_regex = '[a-z0-9]+(?:[a-z0-9\-]*[a-z0-9]\.?|\.)*';
+			$domain_regex   = '([a-z0-9]+([a-z0-9\-]*[a-z0-9])?\.)+[a-z]{2,}';
 			if (!preg_match('#^(https?://(' . $ip_regex . '|' . $hostname_regex . ')(?=/|$)|' . $domain_regex . '(?=/|$)|/)#i', $values[$column])) {
 				$validation_messages[$column] = self::compose(
 					'%sPlease enter a link in the form http://www.example.com',

@@ -6,57 +6,25 @@
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Will Bond, iMarc LLC [wb-imarc] <will@imarc.net>
  * @author     Kevin Hamer [kh] <kevin@imarc.net>
+ * @author     Brian Tam [bt] <brian@imarc.net>
  * @license    http://flourishlib.com/license
  *
  * @package    Flourish
  * @link       http://flourishlib.com/fFile
  *
- * @version    1.0.0b40
- * @changes    1.0.0b40  Better handling of text filetype detection [kh, 2012-12-10]
- * @changes    1.0.0b39  Backwards Compatibility Break - ::output() now automatically ends any open output buffering and discards the contents [wb, 2011-08-24]
- * @changes    1.0.0b38  Added the Countable interface to the class [wb, 2011-06-03]
- * @changes    1.0.0b37  Fixed mime type detection of BMP images [wb, 2011-03-07]
- * @changes    1.0.0b36  Added the `$remove_extension` parameter to ::getName() [wb, 2011-01-10]
- * @changes    1.0.0b35  Added calls to clearstatcache() in ::append() and ::write() to prevent incorrect data from being returned by ::getMTime() and ::getSize() [wb, 2010-11-27]
- * @changes    1.0.0b34  Added ::getExtension() [wb, 2010-05-10]
- * @changes    1.0.0b33  Fixed another situation where ::rename() with the same name would cause the file to be deleted [wb, 2010-04-13]
- * @changes    1.0.0b32  Fixed ::rename() to not fail when the new and old filename are the same [wb, 2010-03-16]
- * @changes    1.0.0b31  Added ::append() [wb, 2010-03-15]
- * @changes    1.0.0b30  Changed the way files deleted in a filesystem transaction are handled, including improvements to the exception that is thrown [wb+wb-imarc, 2010-03-05]
- * @changes    1.0.0b29  Fixed a couple of undefined variable errors in ::determineMimeTypeByContents() [wb, 2010-03-03]
- * @changes    1.0.0b28  Added support for some JPEG files created by Photoshop [wb, 2009-12-16]
- * @changes    1.0.0b27  Backwards Compatibility Break - renamed ::getFilename() to ::getName(), ::getFilesize() to ::getSize(), ::getDirectory() to ::getParent(), added ::move() [wb, 2009-12-16]
- * @changes    1.0.0b26  ::getDirectory(), ::getFilename() and ::getPath() now all work even if the file has been deleted [wb, 2009-10-22]
- * @changes    1.0.0b25  Fixed ::__construct() to throw an fValidationException when the file does not exist [wb, 2009-08-21]
- * @changes    1.0.0b24  Fixed a bug where deleting a file would prevent any future operations in the same script execution on a file or directory with the same path [wb, 2009-08-20]
- * @changes    1.0.0b23  Added the ability to skip checks in ::__construct() for better performance in conjunction with fFilesystem::createObject() [wb, 2009-08-06]
- * @changes    1.0.0b22  Fixed ::__toString() to never throw an exception [wb, 2009-08-06]
- * @changes    1.0.0b21  Fixed a bug in ::determineMimeType() [wb, 2009-07-21]
- * @changes    1.0.0b20  Fixed the exception message thrown by ::output() when output buffering is turned on [wb, 2009-06-26]
- * @changes    1.0.0b19  ::rename() will now rename the file in its current directory if the new filename has no directory separator [wb, 2009-05-04]
- * @changes    1.0.0b18  Changed ::__sleep() to not reset the iterator since it can cause side-effects [wb, 2009-05-04]
- * @changes    1.0.0b17  Added ::__sleep() and ::__wakeup() for proper serialization with the filesystem map [wb, 2009-05-03]
- * @changes    1.0.0b16  ::output() now accepts `TRUE` in the second parameter to use the current filename as the attachment filename [wb, 2009-03-23]
- * @changes    1.0.0b15  Added support for mime type detection of MP3s based on the MPEG-2 (as opposed to MPEG-1) standard [wb, 2009-03-23]
- * @changes    1.0.0b14  Fixed a bug with detecting the mime type of some MP3s [wb, 2009-03-22]
- * @changes    1.0.0b13  Fixed a bug with overwriting files via ::rename() on Windows [wb, 2009-03-11]
- * @changes    1.0.0b12  Backwards compatibility break - Changed the second parameter of ::output() from `$ignore_output_buffer` to `$filename` [wb, 2009-03-05]
- * @changes    1.0.0b11  Changed ::__clone() and ::duplicate() to copy file permissions to the new file [wb, 2009-01-05]
- * @changes    1.0.0b10  Fixed ::duplicate() so an exception is not thrown when no parameters are passed [wb, 2009-01-05]
- * @changes    1.0.0b9   Removed the dependency on fBuffer [wb, 2009-01-05]
- * @changes    1.0.0b8   Added the Iterator interface, ::output() and ::getMTime() [wb, 2008-12-17]
- * @changes    1.0.0b7   Removed some unnecessary error suppresion operators [wb, 2008-12-11]
- * @changes    1.0.0b6   Added the ::__clone() method that duplicates the file on the filesystem when cloned [wb, 2008-12-11]
- * @changes    1.0.0b5   Fixed detection of mime type for JPEG files with Exif information [wb, 2008-12-04]
- * @changes    1.0.0b4   Changed the constructor to ensure the path is to a file and not directory [wb, 2008-11-24]
- * @changes    1.0.0b3   Fixed mime type detection of Microsoft Office files [wb, 2008-11-23]
- * @changes    1.0.0b2   Made ::rename() and ::write() return the object for method chaining [wb, 2008-11-22]
- * @changes    1.0.0b    The initial implementation [wb, 2007-06-14]
  */
 class fFile implements Iterator, Countable
 {
 	// The following constants allow for nice looking callbacks to static methods
 	const create = 'fFile::create';
+
+
+    /**
+     * Enable or disable the file checks
+     *
+     * @var boolean
+     */
+    static private $skip_checks = false;
 
 
 	/**
@@ -143,6 +111,17 @@ class fFile implements Iterator, Countable
 
 		return self::determineMimeTypeByContents($contents, $extension);
 	}
+
+
+	/**
+	 * Set whether or not to skip checks
+	 *
+	 * @param boolean
+	 */
+	 static public function setSkipChecks($check = true)
+	 {
+		 return self::$skip_checks = $check;
+	 }
 
 
 	/**
@@ -307,6 +286,19 @@ class fFile implements Iterator, Countable
 
 		// Archives
 		if ($_0_4 == "PK\x03\x04") {
+
+			if (in_array($extension, array('xlsx'))) {
+				return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+			}
+
+			if (in_array($extension, array('pptx'))) {
+				return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+			}
+
+			if (in_array($extension, array('docx'))) {
+				return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+			}
+
 			return 'application/zip';
 		}
 
@@ -336,17 +328,17 @@ class fFile implements Iterator, Countable
 		}
 
 		if ($_0_4 == "SIT!" || $_0_4 == "SITD" || substr($content, 0, 7) == 'StuffIt') {
-			return 'application/x-stuffit';	
+			return 'application/x-stuffit';
 		}
-		
+
 		// Better detection for text files based on the first line or so.
 		if (strpos($content, '<?php') !== FALSE || strpos($content, '<?=') !== FALSE) {
-			return 'application/x-httpd-php';	
+			return 'application/x-httpd-php';
 		}
-		
+
 		preg_match('/(\S.*?)\s*\n/m', $content, $lines);
 		$first_line = count($lines) > 1 ? $lines[1] : '';
-		
+
 		if (strpos($first_line, '<?xml') !== FALSE) {
 			if (stripos($content, '<!DOCTYPE') !== FALSE) {
 				return 'application/xhtml+xml';
@@ -359,14 +351,14 @@ class fFile implements Iterator, Countable
 			}
 			return 'application/xml';
 		}
-		
+
 		if (stripos($first_line, '<html') !== FALSE) {
 			return 'text/html';
 		}
 		if (stripos($first_line, '<!DOCTYPE') !== FALSE) {
 			return 'text/html';
 		}
-		
+
 		if (preg_match('#^\#\![/a-z0-9]+(python|perl|php|ruby)$#mi', $first_line, $matches)) {
 			switch (strtolower($matches[1])) {
 				case 'php':
@@ -533,7 +525,7 @@ class fFile implements Iterator, Countable
 	 */
 	public function __construct($file, $skip_checks=FALSE)
 	{
-		if (!$skip_checks) {
+		if (!$skip_checks || !self::$skip_checks) {
 			if (empty($file)) {
 				throw new fValidationException(
 					'No filename was specified'
@@ -546,6 +538,7 @@ class fFile implements Iterator, Countable
 					$file
 				);
 			}
+
 			if (is_dir($file)) {
 				throw new fValidationException(
 					'The file specified, %s, is actually a directory',

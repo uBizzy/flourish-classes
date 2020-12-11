@@ -9,20 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fUnbufferedResult
  *
- * @version    1.0.0b13
- * @changes    1.0.0b13  Added a workaround for iconv having issues in MAMP 1.9.4+ [wb, 2011-07-26]
- * @changes    1.0.0b12  Fixed MSSQL to have a properly reset row array, added ::silenceNotices(), fixed pdo_dblib on Windows when using the Microsoft DBLib driver [wb, 2011-05-09]
- * @changes    1.0.0b11  Fixed some bugs with the mysqli extension and prepared statements [wb, 2010-08-28]
- * @changes    1.0.0b10  Backwards Compatibility Break - removed ODBC support [wb, 2010-07-31]
- * @changes    1.0.0b9   Added IBM DB2 support [wb, 2010-04-13]
- * @changes    1.0.0b8   Added support for prepared statements [wb, 2010-03-02]
- * @changes    1.0.0b7   Fixed a bug with decoding MSSQL national column when using an ODBC connection [wb, 2009-09-18]
- * @changes    1.0.0b6   Added the method ::unescape(), changed ::tossIfNoRows() to return the object for chaining [wb, 2009-08-12]
- * @changes    1.0.0b5   Added the method ::asObjects() to allow for returning objects instead of associative arrays [wb, 2009-06-23]
- * @changes    1.0.0b4   Fixed a bug with not properly converting SQL Server text to UTF-8 [wb, 2009-06-18]
- * @changes    1.0.0b3   Added support for Oracle, various bug fixes [wb, 2009-05-04]
- * @changes    1.0.0b2   Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b    The initial implementation [wb, 2008-05-07]
  */
 class fUnbufferedResult implements Iterator
 {

@@ -9,10 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fORMJSON
  *
- * @version    1.0.0b3
- * @changes    1.0.0b3  Removed the `$pointer` parameter from ::toJSONRecordSet() since fRecordSet no longer has a pointer [wb, 2010-09-28]
- * @changes    1.0.0b2  Updated the code to remove the `$associate` parameter for the record set method callback [wb, 2009-06-02]
- * @changes    1.0.0b   The initial implementation [wb, 2008-06-25]
  */
 class fORMJSON
 {

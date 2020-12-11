@@ -9,8 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fExpectedException
  *
- * @version    1.0.0b
- * @changes    1.0.0b  The initial implementation [wb, 2007-06-14]
  */
 class fExpectedException extends fException
 {

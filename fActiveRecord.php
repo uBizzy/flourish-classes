@@ -11,95 +11,12 @@
  * @author     Will Bond [wb] <will@flourishlib.com>
  * @author     Will Bond, iMarc LLC [wb-imarc] <will@imarc.net>
  * @author     Jeff Turcotte [jt] <jeff.turcotte@gmail.com>
+ * @author     Matthew J. Sahagian [mjs] <matt@imarc.net>
  * @license    http://flourishlib.com/license
  *
  * @package    Flourish
  * @link       http://flourishlib.com/fActiveRecord
  *
- * @version    1.0.0b83
- * @changes    1.0.0b83  Added the `$recursive` parameter to ::populate() [wb, 2011-09-16]
- * @changes    1.0.0b82  Added support for registering methods for __callStatic() [jt, 2011-07-25]
- * @changes    1.0.0b81  Fixed a bug with updating a record that contains only an auto-incrementing primary key [wb, 2011-09-06]
- * @changes    1.0.0b80  Added support to ::checkCondition() for the `^~` and `$~` operators [wb, 2011-06-20]
- * @changes    1.0.0b79  Fixed some bugs in handling relationships between PHP 5.3 namespaced classes [wb, 2011-05-26]
- * @changes    1.0.0b78  Backwards Compatibility Break - ::reflect() now returns an associative array instead of a string [wb, 2011-05-10]
- * @changes    1.0.0b77  Fixed ::inspect() to not throw an fProgrammerException when a valid element has a `NULL` value [wb, 2011-05-10]
- * @changes    1.0.0b76  Added ::clearIdentityMap() [wb, 2011-05-09]
- * @changes    1.0.0b75  Fixed a bug where child records of a record with a non-auto-incrementing primary key would not be saved properly for a new record [wb, 2010-12-06]
- * @changes    1.0.0b74  Updated ::populate() to use the `binary` type for fRequest::get() [wb, 2010-11-30]
- * @changes    1.0.0b73  Backwards Compatibility Break - changed column set methods to treat strings of all whitespace the same as empty string and convert them to `NULL` [wb, 2010-11-29]
- * @changes    1.0.0b72  Added the new `comment` element to the reflection signature for `inspect` methods [wb, 2010-11-28]
- * @changes    1.0.0b71  Updated class to use fORM::getRelatedClass() [wb, 2010-11-24]
- * @changes    1.0.0b70  Added support for PHP 5.3 namespaced fActiveRecord classes [wb, 2010-11-11]
- * @changes    1.0.0b69  Backwards Compatibility Break - changed ::validate() to return a nested array of validation messages when there are validation errors on child records [wb-imarc+wb, 2010-10-03]
- * @changes    1.0.0b68  Added hooks to ::replicate() [wb, 2010-09-07]
- * @changes    1.0.0b67  Updated code to work with the new fORM API [wb, 2010-08-06]
- * @changes    1.0.0b66  Fixed a bug with ::store() and non-primary key auto-incrementing columns [wb, 2010-07-05]
- * @changes    1.0.0b65  Fixed bugs with ::inspect() making some `min_value` and `max_value` elements available for non-numeric types, fixed ::reflect() to list the `min_value` and `max_value` elements [wb, 2010-06-08]
- * @changes    1.0.0b64  BackwardsCompatibilityBreak - changed ::validate()'s returned messages array to have field name keys - added the option to ::validate() to remove field names from messages [wb, 2010-05-26]
- * @changes    1.0.0b63  Changed how is_subclass_of() is used to work around a bug in 5.2.x [wb, 2010-04-06]
- * @changes    1.0.0b62  Fixed a bug that could cause infinite recursion starting in v1.0.0b60 [wb, 2010-04-02]
- * @changes    1.0.0b61  Fixed issues with handling `populate` actions when working with mapped classes [wb, 2010-03-31]
- * @changes    1.0.0b60  Fixed issues with handling `associate` and `has` actions when working with mapped classes, added ::validateClass() [wb, 2010-03-30]
- * @changes    1.0.0b59  Changed an extended UTF-8 arrow character into the correct `->` [wb, 2010-03-29]
- * @changes    1.0.0b58  Fixed ::reflect() to specify the value returned from `set` methods [wb, 2010-03-15]
- * @changes    1.0.0b57  Added the `post::loadFromIdentityMap()` hook and fixed ::__construct() to always call the `post::__construct()` hook [wb, 2010-03-14]
- * @changes    1.0.0b56  Fixed `$force_cascade` in ::delete() to work even when the restricted relationship is once-removed through an unrestricted relationship [wb, 2010-03-09]
- * @changes    1.0.0b55  Fixed ::load() to that related records are cleared, requiring them to be loaded from the database [wb, 2010-03-04]
- * @changes    1.0.0b54  Fixed detection of route name for one-to-one relationships in ::delete() [wb, 2010-03-03]
- * @changes    1.0.0b53  Fixed a bug where related records with a primary key that contained a foreign key with an on update cascade clause would be deleted when changing the value of the column referenced by the foreign key [wb, 2009-12-17]
- * @changes    1.0.0b52  Backwards Compatibility Break - Added the $force_cascade parameter to ::delete() and ::store() - enabled calling ::prepare() and ::encode() for non-column get methods, added `::has{RelatedRecords}()` methods [wb, 2009-12-16]
- * @changes    1.0.0b51  Made ::changed() properly recognize that a blank string and NULL are equivalent due to the way that ::set() casts values [wb, 2009-11-14]
- * @changes    1.0.0b50  Fixed a bug with trying to load by a multi-column primary key where one of the columns was not specified [wb, 2009-11-13]
- * @changes    1.0.0b49  Fixed a bug affecting where conditions with columns that are not null but have a default value [wb, 2009-11-03]
- * @changes    1.0.0b48  Updated code for the new fORMDatabase and fORMSchema APIs [wb, 2009-10-28]
- * @changes    1.0.0b47  Changed `::associate{RelatedRecords}()`, `::link{RelatedRecords}()` and `::populate{RelatedRecords}()` to allow for method chaining [wb, 2009-10-22]
- * @changes    1.0.0b46  Changed SQL statements to use value placeholders and identifier escaping [wb, 2009-10-22]
- * @changes    1.0.0b45  Added support for `!~`, `&~`, `><` and OR comparisons to ::checkConditions(), made object handling in ::checkConditions() more robust [wb, 2009-09-21]
- * @changes    1.0.0b44  Updated code for new fValidationException API [wb, 2009-09-18]
- * @changes    1.0.0b43  Updated code for new fRecordSet API [wb, 2009-09-16]
- * @changes    1.0.0b42  Corrected a grammar bug in ::hash() [wb, 2009-09-09]
- * @changes    1.0.0b41  Fixed a bug in the last version that would cause issues with classes containing a custom class to table mapping [wb, 2009-09-01]
- * @changes    1.0.0b40  Added a check to the configuration part of ::__construct() to ensure modelled tables have primary keys [wb, 2009-08-26]
- * @changes    1.0.0b39  Changed `set{ColumnName}()` methods to return the record for method chaining, fixed a bug with loading by multi-column unique constraints, fixed a bug with ::load() [wb, 2009-08-26]
- * @changes    1.0.0b38  Updated ::changed() to do a strict comparison when at least one value is NULL [wb, 2009-08-17]
- * @changes    1.0.0b37  Changed ::__construct() to allow any Iterator object instead of just fResult [wb, 2009-08-12]
- * @changes    1.0.0b36  Fixed a bug with setting NULL values from v1.0.0b33 [wb, 2009-08-10]
- * @changes    1.0.0b35  Fixed a bug with unescaping data in ::loadFromResult() from v1.0.0b33 [wb, 2009-08-10]
- * @changes    1.0.0b34  Added the ability to compare fActiveRecord objects in ::checkConditions() [wb, 2009-08-07]
- * @changes    1.0.0b33  Performance enhancements to ::__call() and ::__construct() [wb, 2009-08-07]
- * @changes    1.0.0b32  Changed ::delete() to remove auto-incrementing primary keys after the post::delete() hook [wb, 2009-07-29]
- * @changes    1.0.0b31  Fixed a bug with loading a record by a multi-column primary key, fixed one-to-one relationship API [wb, 2009-07-21]
- * @changes    1.0.0b30  Updated ::reflect() for new fORM::callReflectCallbacks() API [wb, 2009-07-13]
- * @changes    1.0.0b29  Updated to use new fORM::callInspectCallbacks() method [wb, 2009-07-13]
- * @changes    1.0.0b28  Fixed a bug where records would break the identity map at the end of ::store() [wb, 2009-07-09]
- * @changes    1.0.0b27  Changed ::hash() from a protected method to a static public/internal method that requires the class name for non-fActiveRecord values [wb, 2009-07-09]
- * @changes    1.0.0b26  Added ::checkConditions() from fRecordSet [wb, 2009-07-08]
- * @changes    1.0.0b25  Updated ::validate() to use new fORMValidation API, including new message search/replace functionality [wb, 2009-07-01]
- * @changes    1.0.0b24  Changed ::validate() to remove duplicate validation messages [wb, 2009-06-30]
- * @changes    1.0.0b23  Updated code for new fORMValidation::validateRelated() API [wb, 2009-06-26]
- * @changes    1.0.0b22  Added support for the $formatting parameter to encode methods on char, text and varchar columns [wb, 2009-06-19]
- * @changes    1.0.0b21  Performance tweaks and updates for fORM and fORMRelated API changes [wb, 2009-06-15]
- * @changes    1.0.0b20  Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b19  Added `list{RelatedRecords}()` methods, updated code for new fORMRelated API [wb, 2009-06-02]
- * @changes    1.0.0b18  Changed ::store() to use new fORMRelated::store() method [wb, 2009-06-02]
- * @changes    1.0.0b17  Added some missing parameter information to ::reflect() [wb, 2009-06-01]
- * @changes    1.0.0b16  Fixed bugs in ::__clone() and ::replicate() related to recursive relationships [wb-imarc, 2009-05-20]
- * @changes    1.0.0b15  Fixed an incorrect variable reference in ::store() [wb, 2009-05-06]
- * @changes    1.0.0b14  ::store() no longer tries to get an auto-incrementing ID from the database if a value was set [wb, 2009-05-02]
- * @changes    1.0.0b13  ::delete(), ::load(), ::populate() and ::store() now return the record to allow for method chaining [wb, 2009-03-23]
- * @changes    1.0.0b12  ::set() now removes commas from integers and floats to prevent validation issues [wb, 2009-03-22]
- * @changes    1.0.0b11  ::encode() no longer adds commas to floats [wb, 2009-03-22]
- * @changes    1.0.0b10  ::__wakeup() no longer registers the record as the definitive copy in the identity map [wb, 2009-03-22]
- * @changes    1.0.0b9   Changed ::__construct() to populate database default values when a non-existing record is instantiated [wb, 2009-01-12]
- * @changes    1.0.0b8   Fixed ::exists() to properly detect cases when an existing record has one or more NULL values in the primary key [wb, 2009-01-11]
- * @changes    1.0.0b7   Fixed ::__construct() to not trigger the post::__construct() hook when force-configured [wb, 2008-12-30]
- * @changes    1.0.0b6   ::__construct() now accepts an associative array matching any unique key or primary key, fixed the post::__construct() hook to be called once for each record [wb, 2008-12-26]
- * @changes    1.0.0b5   Fixed ::replicate() to use plural record names for related records [wb, 2008-12-12]
- * @changes    1.0.0b4   Added ::replicate() to allow cloning along with related records [wb, 2008-12-12]
- * @changes    1.0.0b3   Changed ::__clone() to clone objects contains in the values and cache arrays [wb, 2008-12-11]
- * @changes    1.0.0b2   Added the ::__clone() method to properly duplicate a record [wb, 2008-12-04]
- * @changes    1.0.0b    The initial implementation [wb, 2007-08-04]
  */
 abstract class fActiveRecord
 {
@@ -179,11 +96,11 @@ abstract class fActiveRecord
 
 	/**
 	 * Handles dynamically registered static method callbacks
-	 * 
+	 *
 	 * Static method callbacks registered through fORM::registerActiveRecordStaticMethod()
 	 * will be delegated via this method. Both this and fORM::registerActiveRecordStaticMethod
 	 * are available to PHP 5.3+ only.
-	 * 
+	 *
 	 * @throws fProgrammerException  When the method cannot be found
 	 * @param  string $method_name  The name of the method called
 	 * @param  array  $parameters   The parameters passed
@@ -198,7 +115,7 @@ abstract class fActiveRecord
 		if (!isset(self::$static_callback_cache[$class][$method_name])) {
 			if (!isset(self::$static_callback_cache[$class])) {
 				self::$static_callback_cache[$class] = array();
-			} 
+			}
 			$callback = fORM::getActiveRecordStaticMethod($class, $method_name);
 			self::$static_callback_cache[$class][$method_name] = $callback ? $callback : FALSE;
 		}
@@ -673,12 +590,17 @@ abstract class fActiveRecord
 			$plural  = TRUE;
 		}
 
+
+
 		$related_table = fORM::tablize($subject);
-		$one_to_one    = fORMSchema::isOneToOne($schema, $table, $related_table, $route);
-		if ($one_to_one) {
-			$type = 'one-to-one';
+		$routes        = fORMSchema::getRoutes($schema, $table, $related_table, '*-to-one');
+		$star_to_one   = ($route && isset($routes[$route])) || count($routes);
+
+		if ($star_to_one) {
+			$type = '*-to-one';
 		}
-		if (($one_to_one && $plural) || (!$plural && !$one_to_one)) {
+
+		if (($star_to_one && $plural) || (!$plural && !$star_to_one)) {
 			throw new fProgrammerException(
 				'The table %1$s is not in a %2$srelationship with the table %3$s',
 				$table,
@@ -686,10 +608,15 @@ abstract class fActiveRecord
 				$related_table
 			);
 		}
+		if ($star_to_one) {
+			$type = !fORMSchema::isOneToOne($schema, $table, $related_table, $route)
+				? 'many-to-one'
+				: 'one-to-one';
+		}
 
 		$route = fORMSchema::getRouteName($schema, $table, $related_table, $route, $type);
 
-		return array($subject, $route, $plural);
+		return array($subject, $route, $plural, ($type != 'many-to-one'));
 	}
 
 
@@ -888,6 +815,13 @@ abstract class fActiveRecord
 	 */
 	protected $values = array();
 
+	/**
+	 * Values which we do not want to populate
+	 *
+	 * @var array
+	 */
+	protected $protected_params = array();
+
 
 	/**
 	 * Handles all method calls for columns, related records and hook callbacks
@@ -1001,12 +935,12 @@ abstract class fActiveRecord
 				$records = $parameters[0];
 				$route   = isset($parameters[1]) ? $parameters[1] : NULL;
 
-				list ($subject, $route, $plural) = self::determineSubject($class, $subject, $route);
+				list ($subject, $route, $plural, $flag) = self::determineSubject($class, $subject, $route);
 
 				if ($plural) {
-					fORMRelated::associateRecords($class, $this->related_records, $subject, $records, $route);
+					fORMRelated::associateRecords($class, $this->related_records, $subject, $records, $route, $flag);
 				} else {
-					fORMRelated::associateRecord($class, $this->related_records, $subject, $records, $route);
+					fORMRelated::associateRecord($class, $this->related_records, $subject, $records, $route, $flag);
 				}
 				return $this;
 
@@ -1069,9 +1003,9 @@ abstract class fActiveRecord
 					$recursive = $route;
 					$route = isset($parameters[1]) ? $parameters[1] : NULL;
 				}
-				
+
 				list ($subject, $route, ) = self::determineSubject($class, $subject, $route);
-				
+
 				fORMRelated::populateRecords($class, $this->related_records, $subject, $route, $recursive);
 				return $this;
 
@@ -1275,12 +1209,7 @@ abstract class fActiveRecord
 			foreach ($column_info as $column => $info) {
 				$this->values[$column] = NULL;
 				if ($info['default'] !== NULL) {
-					self::assign(
-						$this->values,
-						$this->old_values,
-						$column,
-						fORM::objectify($class, $column, $info['default'])
-					);
+					$this->values[$column] = fORM::objectify($class, $column, $info['default']);
 				}
 			}
 		}
@@ -1808,7 +1737,7 @@ abstract class fActiveRecord
 
 		foreach ($pk_columns as $pk_column) {
 			$has_old = self::hasOld($this->old_values, $pk_column);
-			if (($has_old && self::retrieveOld($this->old_values, $pk_column) !== NULL) || (!$has_old && $this->values[$pk_column] !== NULL)) {
+			if (($has_old && self::retrieveOld($this->old_values, $pk_column) !== NULL) || (!$has_old && isset($this->values[$pk_column]) && $this->values[$pk_column] !== NULL)) {
 				$exists = TRUE;
 			}
 		}
@@ -2100,18 +2029,23 @@ abstract class fActiveRecord
 
 	/*
 	 * Sets the values for this record by getting values from the request through the fRequest class
-	 * 
+	 *
 	 * @param  boolean $recursive  If all one-to-many tables and one-to-one relationships should be populated
+	 * @param  boolean $prefix  If provided, fRequest will filter by this prefix before populating
 	 * @return fActiveRecord  The record object, to allow for method chaining
 	 */
-	public function populate($recursive=FALSE)
+	public function populate($recursive=FALSE, $prefix = NULL)
 	{
 		$class = get_class($this);
-		
+
+		if ($prefix) {
+			fRequest::filter($prefix);
+		}
+
 		if (fORM::getActiveRecordMethod($class, 'populate')) {
 			return $this->__call('populate', array());
 		}
-		
+
 		fORM::callHookCallbacks(
 			$this,
 			'pre::populate()',
@@ -2120,19 +2054,24 @@ abstract class fActiveRecord
 			$this->related_records,
 			$this->cache
 		);
-		
-		$schema = fORMSchema::retrieve($class);
-		$table  = fORM::tablize($class);
-		
+
+		$schema      = fORMSchema::retrieve($class);
+		$table       = fORM::tablize($class);
 		$column_info = $schema->getColumnInfo($table);
+
 		foreach ($column_info as $column => $info) {
+
+			if (array_search($column, $this->protected_params) !== FALSE) {
+				continue;
+			}
+
 			if (fRequest::check($column)) {
-				$method = 'set' . fGrammar::camelize($column, TRUE);
+				$method  = 'set' . fGrammar::camelize($column, TRUE);
 				$cast_to = ($info['type'] == 'blob') ? 'binary' : NULL;
 				$this->$method(fRequest::get($column, $cast_to));
 			}
 		}
-		
+
 		fORM::callHookCallbacks(
 			$this,
 			'post::populate()',
@@ -2142,9 +2081,13 @@ abstract class fActiveRecord
 			$this->cache
 		);
 
-		if ($recursive) { 
+		if ($prefix) {
+			fRequest::unfilter();
+		}
+
+		if ($recursive) {
 			$one_to_many_relationships = $schema->getRelationships($table, 'one-to-many');
-			foreach ($one_to_many_relationships as $relationship) { 
+			foreach ($one_to_many_relationships as $relationship) {
 				$route_name = fORMSchema::getRouteNameFromRelationship('one-to-many', $relationship);
 				$related_class = fORM::classize($relationship['related_table']);
 				$method = 'populate' . fGrammar::pluralize($related_class);
@@ -2152,13 +2095,13 @@ abstract class fActiveRecord
 			}
 
 			$one_to_one_relationships = $schema->getRelationships($table, 'one-to-one');
-			foreach ($one_to_one_relationships as $relationship) { 
+			foreach ($one_to_one_relationships as $relationship) {
 				$route_name = fORMSchema::getRouteNameFromRelationship('one-to-one', $relationship);
 				$related_class = fORM::classize($relationship['related_table']);
 				$this->__call('populate' . $related_class, array(TRUE, $route_name));
 			}
 		}
-		
+
 		return $this;
 	}
 
@@ -2278,6 +2221,20 @@ abstract class fActiveRecord
 		// proper data type for the column, so we just make sure it is marked
 		// up properly for display in HTML
 		return fHTML::prepare($value);
+	}
+
+
+	/**
+	 * Protect certain columns from mass injection on populate()
+	 *
+	 * @param  array  $params  An array of parameter / column names to protect
+	 * @return fActiveRecord   This record, to allow for method chaining
+	 */
+	public function protect(Array $params = array())
+	{
+		$this->protected_params = $params;
+
+		return $this;
 	}
 
 
@@ -2943,21 +2900,7 @@ abstract class fActiveRecord
 			throw $e;
 		}
 
-		fORM::callHookCallbacks(
-			$this,
-			'post::store()',
-			$this->values,
-			$this->old_values,
-			$this->related_records,
-			$this->cache
-		);
-
 		$was_new = !$this->exists();
-
-		// If we got here we succefully stored, so update old values to make exists() work
-		foreach ($this->values as $column => $value) {
-			$this->old_values[$column] = array($value);
-		}
 
 		// If the object was just inserted into the database, save it to the identity map
 		if ($was_new) {
@@ -2967,6 +2910,20 @@ abstract class fActiveRecord
 				self::$identity_map[$class] = array();
 			}
 			self::$identity_map[$class][$hash] = $this;
+		}
+
+		fORM::callHookCallbacks(
+			$this,
+			'post::store()',
+			$this->values,
+			$this->old_values,
+			$this->related_records,
+			$this->cache
+		);
+
+		// If we got here we succefully stored, so update old values to make exists() work
+		foreach ($this->values as $column => $value) {
+			$this->old_values[$column] = array($value);
 		}
 
 		return $this;

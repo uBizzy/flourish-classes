@@ -9,9 +9,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fPagination
  *
- * @version 1.0.0b2
- * @changes 1.0.0b2   Improved the determination of what pages to show with `with_first_last` templates [wb, 2012-09-16]
- * @changes 1.0.0b    Added the `prev_disabled` and `next_disabled` pieces [wb, 2011-09-06]
  */
 class fPagination
 {

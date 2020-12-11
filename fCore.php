@@ -13,33 +13,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fCore
  *
- * @version    1.0.0b26
- * @changes    1.0.0b26  Added handle_fatal_errors flag to enableErrorHandling [jt, 2013-06-10]
- * @changes    1.0.0b25  exposing ->generateContext() [kh, 2012-12-18]
- * @changes    1.0.0b24  Backwards Compatibility Break - moved ::detectOpcodeCache() to fLoader::hasOpcodeCache() [wb, 2011-08-26]
- * @changes    1.0.0b23  Backwards Compatibility Break - changed the email subject of error/exception emails to include relevant file info, instead of the timestamp, for better email message threading [wb, 2011-06-20]
- * @changes    1.0.0b22  Fixed a bug with dumping arrays containing integers [wb, 2011-05-26]
- * @changes    1.0.0b21  Changed ::startErrorCapture() to allow "stacking" it via multiple calls, fixed a couple of bugs with ::dump() mangling strings in the form `int(1)`, fixed mispelling of `occurred` [wb, 2011-05-09]
- * @changes    1.0.0b20  Backwards Compatibility Break - Updated ::expose() to not wrap the data in HTML when running via CLI, and instead just append a newline [wb, 2011-02-24]
- * @changes    1.0.0b19  Added detection of AIX to ::checkOS() [wb, 2011-01-19]
- * @changes    1.0.0b18  Updated ::expose() to be able to accept multiple parameters [wb, 2011-01-10]
- * @changes    1.0.0b17  Fixed a bug with ::backtrace() triggering notices when an argument is not UTF-8 [wb, 2010-08-17]
- * @changes    1.0.0b16  Added the `$types` and `$regex` parameters to ::startErrorCapture() and the `$regex` parameter to ::stopErrorCapture() [wb, 2010-08-09]
- * @changes    1.0.0b15  Added ::startErrorCapture() and ::stopErrorCapture() [wb, 2010-07-05]
- * @changes    1.0.0b14  Changed ::enableExceptionHandling() to only call fException::printMessage() when the destination is not `html` and no callback has been defined, added ::configureSMTP() to allow using fSMTP for error and exception emails [wb, 2010-06-04]
- * @changes    1.0.0b13  Added the `$backtrace` parameter to ::backtrace() [wb, 2010-03-05]
- * @changes    1.0.0b12  Added ::getDebug() to check for the global debugging flag, added more specific BSD checks to ::checkOS() [wb, 2010-03-02]
- * @changes    1.0.0b11  Added ::detectOpcodeCache() [nt+wb, 2009-10-06]
- * @changes    1.0.0b10  Fixed ::expose() to properly display when output includes non-UTF-8 binary data [wb, 2009-06-29]
- * @changes    1.0.0b9   Added ::disableContext() to remove context info for exception/error handling, tweaked output for exceptions/errors [wb, 2009-06-28]
- * @changes    1.0.0b8   ::enableErrorHandling() and ::enableExceptionHandling() now accept multiple email addresses, and a much wider range of emails [wb-imarc, 2009-06-01]
- * @changes    1.0.0b7   ::backtrace() now properly replaces document root with {doc_root} on Windows [wb, 2009-05-02]
- * @changes    1.0.0b6   Fixed a bug with getting the server name for error messages when running on the command line [wb, 2009-03-11]
- * @changes    1.0.0b5   Fixed a bug with checking the error/exception destination when a log file is specified [wb, 2009-03-07]
- * @changes    1.0.0b4   Backwards compatibility break - ::getOS() and ::getPHPVersion() removed, replaced with ::checkOS() and ::checkVersion() [wb, 2009-02-16]
- * @changes    1.0.0b3   ::handleError() now displays what kind of error occurred as the heading [wb, 2009-02-15]
- * @changes    1.0.0b2   Added ::registerDebugCallback() [wb, 2009-02-07]
- * @changes    1.0.0b    The initial implementation [wb, 2007-09-25]
  */
 class fCore
 {
@@ -98,6 +71,13 @@ class fCore
 	static private $captured_errors = array();
 
 	/**
+	 * A custom mailer callback
+	 *
+	 * @var callable
+	 */
+	static private $custom_mailer = NULL;
+
+	 /**
 	 * A stack of the previous error handler, one callback per level
 	 *
 	 * @var array
@@ -513,6 +493,18 @@ class fCore
 		} else {
 			return vsprintf($message, $args);
 		}
+	}
+
+
+	/**
+	 * Set custom mailer callback. Allows for fully custom error and exception emails
+	 *
+	 * @param callable $callback  A callback which accepts to arguements: subject, message, destination
+	 * @return void
+	 */
+	static public function configureCustomMailer($callback)
+	{
+		self::$custom_mailer = $callback;
 	}
 
 
@@ -992,7 +984,16 @@ class fCore
 		}
 
 		try {
-			self::call(self::$exception_handler_callback, self::$exception_handler_parameters);
+			self::call(
+				self::$exception_handler_callback,
+				array_merge(
+					self::$exception_handler_parameters,
+					array(
+						self::generateContext(),
+						$info_block
+					)
+				)
+			);
 		} catch (Exception $e) {
 			trigger_error(
 				self::compose(
@@ -1113,7 +1114,10 @@ class fCore
 			}
 
 			if (self::checkDestination($destination) == 'email') {
-				if (self::$smtp_connection) {
+				if (self::$custom_mailer) {
+					call_user_func_array(self::$custom_mailer, [$subject, $message, $destination]);
+
+				} elseif (self::$smtp_connection) {
 					$email = new fEmail();
 					foreach (explode(',', $destination) as $recipient) {
 						$email->addRecipient($recipient);

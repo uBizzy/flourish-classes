@@ -11,23 +11,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fFilesystem
  *
- * @version    1.0.0b16
- * @changes    1.0.0b16  Added a call to clearstatcache() to ::rollback() to prevent incorrect data from being returned by fFile::getMTime() and fFile::getSize() [wb, 2010-11-27]
- * @changes    1.0.0b15  Fixed ::translateToWebPath() to handle Windows \s [wb, 2010-04-09]
- * @changes    1.0.0b14  Added ::recordAppend() [wb, 2010-03-15]
- * @changes    1.0.0b13  Changed the way files/directories deleted in a filesystem transaction are handled, including improvements to the exception that is thrown [wb+wb-imarc, 2010-03-05]
- * @changes    1.0.0b12  Updated ::convertToBytes() to properly handle integers without a suffix and sizes with fractions [al+wb, 2009-11-14]
- * @changes    1.0.0b11  Corrected the API documentation for ::getPathInfo() [wb, 2009-09-09]
- * @changes    1.0.0b10  Updated ::updateExceptionMap() to not contain the Exception class parameter hint, allowing NULL to be passed [wb, 2009-08-20]
- * @changes    1.0.0b9   Added some performance tweaks to ::createObject() [wb, 2009-08-06]
- * @changes    1.0.0b8   Changed ::formatFilesize() to not use decimal places for bytes, add a space before and drop the `B` in suffixes [wb, 2009-07-12]
- * @changes    1.0.0b7   Fixed ::formatFilesize() to work when `$bytes` equals zero [wb, 2009-07-08]
- * @changes    1.0.0b6   Changed replacement values in preg_replace() calls to be properly escaped [wb, 2009-06-11]
- * @changes    1.0.0b5   Changed ::formatFilesize() to use proper uppercase letters instead of lowercase [wb, 2009-06-02]
- * @changes    1.0.0b4   Added the ::createObject() method [wb, 2009-01-21]
- * @changes    1.0.0b3   Removed some unnecessary error suppresion operators [wb, 2008-12-11]
- * @changes    1.0.0b2   Fixed a bug where the filepath and exception maps weren't being updated after a rollback [wb, 2008-12-11]
- * @changes    1.0.0b    The initial implementation [wb, 2008-03-24]
  */
 class fFilesystem
 {
@@ -84,6 +67,13 @@ class fFilesystem
 	 * @var array
 	 */
 	static private $rollback_operations = NULL;
+
+	/**
+	 * Enables or disables the file checks
+	 *
+	 * @var boolean
+	 */
+	 static private $skip_checks = false;
 
 	/**
 	 * Stores a list of search => replace strings for web path translations
@@ -218,11 +208,13 @@ class fFilesystem
 			);
 		}
 
-		if (!is_readable($path)) {
-			throw new fValidationException(
-				'The path specified, %s, does not exist or is not readable',
-				$path
-			);
+		if (!self::$skip_checks) {
+			if (!is_readable($path)) {
+				throw new fValidationException(
+					'The path specified, %s, does not exist or is not readable',
+					$path
+				);
+			}
 		}
 
 		if (is_dir($path)) {
@@ -394,6 +386,17 @@ class fFilesystem
 
 		return $file;
 	}
+
+
+	/**
+	 * Set whether or not to skip checks
+	 *
+	 * @param boolean
+	 */
+	 static public function setSkipChecks($check = true)
+	 {
+		 return self::$skip_checks = $check;
+	 }
 
 
 	/**

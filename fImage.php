@@ -11,42 +11,6 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fImage
  *
- * @version    1.0.0b35
- * @changes    1.0.0b35  Fixed an issue with ImageMagick 6.7.5+ and colorspace argument [jt, 2014-01-09]
- * @changes    1.0.0b34  Fixed a bug in getImageType() where the fread was not reading enough bytes [jt, 2012-06-05]
- * @changes    1.0.0b33  Fixed a method signature [wb, 2011-08-24]
- * @changes    1.0.0b32  Added a call to clearstatcache() to ::saveChanges() to solve a bug when fFile::output() is called in the same script execution [wb, 2011-05-23]
- * @changes    1.0.0b31  Fixed a bug in using ImageMagick to convert files with a colon in the filename [wb, 2011-03-20]
- * @changes    1.0.0b30  Added a check for systems using the GD extension and no memory limit, plus a check for ImageMagick's convert command failing [wb, 2011-03-20]
- * @changes    1.0.0b29  Added checks for AIX [wb, 2011-01-19]
- * @changes    1.0.0b28  Added the ::rotate() method, added code to try and prevent fatal errors due to hitting the memory limit when using GD [wb, 2010-11-29]
- * @changes    1.0.0b27  Backwards Compatibility Break - changed the parameter order in ::crop() from `$crop_from_x`, `$crop_from_y`, `$new_width`, `$new_height` to `$new_width`, `$new_height`, `$crop_from_x`, `$crop_from_y` - added `$horizontal_position` and `$vertical_position` parameters to ::cropToRatio() [wb-imarc, 2010-11-09]
- * @changes    1.0.0b26  Fixed a bug where processing via ImageMagick was not properly setting the default RGB colorspace [wb, 2010-10-19]
- * @changes    1.0.0b25  Fixed the class to not generate multiple files when saving a JPG from an animated GIF or a TIF with a thumbnail [wb, 2010-09-12]
- * @changes    1.0.0b24  Updated class to use fCore::startErrorCapture() instead of `error_reporting()` [wb, 2010-08-09]
- * @changes    1.0.0b23  Fixed the class to detect when exec() is disabled and the function has a space before or after in the list [wb, 2010-07-21]
- * @changes    1.0.0b22  Fixed ::isImageCompatible() to handle certain JPGs created with Photoshop [wb, 2010-04-03]
- * @changes    1.0.0b21  Fixed ::resize() to allow dimensions to be numeric strings instead of just integers [wb, 2010-04-09]
- * @changes    1.0.0b20  Added ::append() [wb, 2010-03-15]
- * @changes    1.0.0b19  Updated for the new fFile API [wb-imarc, 2010-03-05]
- * @changes    1.0.0b18  Fixed a bug in ::saveChanges() that would incorrectly cause new filenames to be created, added the $overwrite parameter to ::saveChanges(), added the $allow_upsizing parameter to ::resize() [wb, 2010-03-03]
- * @changes    1.0.0b17  Fixed a couple of bug with using ImageMagick on Windows and BSD machines [wb, 2010-03-02]
- * @changes    1.0.0b16  Fixed some bugs with GD not properly handling transparent backgrounds and desaturation of .gif files [wb, 2009-10-27]
- * @changes    1.0.0b15  Added ::getDimensions() [wb, 2009-08-07]
- * @changes    1.0.0b14  Performance updates for checking image type and compatiblity [wb, 2009-07-31]
- * @changes    1.0.0b13  Updated class to work even if the file extension is wrong or not present, ::saveChanges() detects files that aren't writable [wb, 2009-07-29]
- * @changes    1.0.0b12  Fixed a bug where calling ::saveChanges() after unserializing would throw an exception related to the image processor [wb, 2009-05-27]
- * @changes    1.0.0b11  Added a ::crop() method [wb, 2009-05-27]
- * @changes    1.0.0b10  Fixed a bug with GD not saving changes to files ending in .jpeg [wb, 2009-03-18]
- * @changes    1.0.0b9   Changed ::processWithGD() to explicitly free the image resource [wb, 2009-03-18]
- * @changes    1.0.0b8   Updated for new fCore API [wb, 2009-02-16]
- * @changes    1.0.0b7   Changed @ error suppression operator to `error_reporting()` calls [wb, 2009-01-26]
- * @changes    1.0.0b6   Fixed ::cropToRatio() and ::resize() to always return the object even if nothing is to be done [wb, 2009-01-05]
- * @changes    1.0.0b5   Added check to see if exec() is disabled, which causes ImageMagick to not work [wb, 2009-01-03]
- * @changes    1.0.0b4   Fixed ::saveChanges() to not delete the image if no changes have been made [wb, 2008-12-18]
- * @changes    1.0.0b3   Fixed a bug with $jpeg_quality in ::saveChanges() from 1.0.0b2 [wb, 2008-12-16]
- * @changes    1.0.0b2   Changed some int casts to round() to fix ::resize() dimension issues [wb, 2008-12-11]
- * @changes    1.0.0b    The initial implementation [wb, 2007-12-19]
  */
 class fImage extends fFile
 {
@@ -58,6 +22,13 @@ class fImage extends fFile
 	const setImageMagickDirectory = 'fImage::setImageMagickDirectory';
 	const setImageMagickTempDir   = 'fImage::setImageMagickTempDir';
 
+
+	/**
+	 * Enable or disable the exif image type check
+	 *
+	 * @var boolean
+	 */
+	static private $exif_image_type_check = true;
 
 	/**
 	 * If we are using the ImageMagick processor, this stores the path to the binaries
@@ -291,7 +262,6 @@ class fImage extends fFile
 		}
 	}
 
-
 	/**
 	 * Returns an array of acceptable mime types for the processor that was detected
 	 *
@@ -394,6 +364,40 @@ class fImage extends fFile
 	 */
 	static private function getImageType($image)
 	{
+		if (self::$exif_image_type_check === false) {
+			$extension = pathinfo($image, PATHINFO_EXTENSION);
+
+			if (in_array($extension, ['jpg', 'tif', 'png', 'gif'])) {
+				return $extension;
+			}
+
+			return null;
+		}
+
+		if (function_exists('exif_imagetype')) {
+			fCore::startErrorCapture();
+			$type = exif_imagetype($image);
+			fCore::stopErrorCapture();
+
+			if ($type === IMAGETYPE_JPEG) {
+				return 'jpg';
+			}
+
+			if ($type === IMAGETYPE_TIFF_II || $type === IMAGETYPE_TIFF_MM) {
+				return 'tif';
+			}
+
+			if ($type === IMAGETYPE_PNG) {
+				return 'png';
+			}
+
+			if ($type === IMAGETYPE_GIF) {
+				return 'gif';
+			}
+		}
+
+		// Fall back to legacy image detection.
+
 		$handle   = fopen($image, 'r');
 		$contents = fread($handle, 32);
 		fclose($handle);
@@ -512,6 +516,17 @@ class fImage extends fFile
 		self::$imagemagick_temp_dir = NULL;
 		self::$processor            = NULL;
 	}
+
+
+	/**
+	 * Set whether or not to do exif imagetype checks
+	 *
+	 * @param boolean
+	 */
+	 static public function setExifTypeCheck($check = true)
+	 {
+		 return self::$exif_image_type_check = $check;
+	 }
 
 
 	/**
@@ -1366,11 +1381,12 @@ class fImage extends fFile
 	 * @param  string  $new_image_type  The new file format for the image: 'NULL` (no change), `'jpg'`, `'gif'`, `'png'`
 	 * @param  integer $jpeg_quality    The quality setting to use for JPEG images - this may be ommitted
 	 * @param  boolean $overwrite       If an existing file with the same name and extension should be overwritten
+	 * @param  boolean $force_write     Forces the write of the image file even if there are no pending modifications
 	 * @param  string  |$new_image_type
 	 * @param  boolean |$overwrite
 	 * @return fImage  The image object, to allow for method chaining
 	 */
-	public function saveChanges($new_image_type=NULL, $jpeg_quality=90, $overwrite=FALSE)
+	public function saveChanges($new_image_type=NULL, $jpeg_quality=90, $overwrite=FALSE, $force_write=FALSE)
 	{
 		// This allows ommitting the $jpeg_quality parameter, which is very useful for non-jpegs
 		$args = func_get_args();
@@ -1455,7 +1471,7 @@ class fImage extends fFile
 		}
 
 		// If we don't have any changes and no name change, just exit
-		if (!$this->pending_modifications && $output_file == $this->file) {
+		if (!$force_write && !$this->pending_modifications && $output_file == $this->file) {
 			return $this;
 		}
 
